@@ -1,0 +1,46 @@
+# EAS Build ignore file - placed at git root
+# Exclude everything not needed for mobile build
+
+# Other project folders
+web/
+server/
+esp32-holter-sim/
+__pycache__/
+
+# Mobile dependencies (reinstalled on EAS servers)  
+mobile/node_modules/
+
+# Native folders (prebuild on server)
+mobile/ios/
+mobile/android/
+
+# Expo cache
+mobile/.expo/
+mobile/dist/
+mobile/web-build/
+
+# Build artifacts
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# Debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# OS
+.DS_Store
+*.pem
+
+# Local env files
+.env*.local
+
+# TypeScript
+*.tsbuildinfo

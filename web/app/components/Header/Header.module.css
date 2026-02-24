@@ -1,0 +1,183 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 0 1.5rem;
+  height: var(--header-height);
+  transition: background var(--duration-normal) var(--ease-out),
+    border-color var(--duration-normal) var(--ease-out);
+  border-bottom: 1px solid transparent;
+}
+
+.scrolled {
+  background: rgba(6, 8, 13, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom-color: var(--border);
+}
+
+.inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.logoIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.logoText {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.navLink {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color var(--duration-fast);
+  text-decoration: none;
+}
+
+.navLink:hover {
+  color: var(--text-primary);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ctaButton {
+  padding: 0.5rem 1.25rem;
+  background: var(--primary);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  transition: background var(--duration-fast), box-shadow var(--duration-fast);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ctaButton:hover {
+  background: var(--primary-light);
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.loginLink {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color var(--duration-fast);
+  text-decoration: none;
+}
+
+.loginLink:hover {
+  color: var(--primary-light);
+}
+
+.menuBtn {
+  display: none;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--glass-bg);
+}
+
+/* Mobile Menu */
+.mobileMenu {
+  display: none;
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background: rgba(6, 8, 13, 0.95);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.5rem 1.5rem;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mobileLink {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-fast);
+  text-decoration: none;
+}
+
+.mobileLink:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.mobileCta {
+  display: block;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: var(--primary);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  text-align: center;
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .nav {
+    display: none;
+  }
+
+  .ctaButton,
+  .loginLink {
+    display: none;
+  }
+
+  .menuBtn {
+    display: flex;
+  }
+
+  .mobileMenu {
+    display: flex;
+  }
+}

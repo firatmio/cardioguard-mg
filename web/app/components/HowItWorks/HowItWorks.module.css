@@ -1,0 +1,110 @@
+.section {
+  padding: var(--section-gap) 0;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stepsContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.timeline {
+  position: absolute;
+  left: 38px;
+  top: 32px;
+  bottom: 32px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--primary) 0%, var(--border) 100%);
+}
+
+.stepItem {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+  position: relative;
+}
+
+.stepLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 76px;
+}
+
+.stepNumber {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--primary-light);
+  letter-spacing: 0.06em;
+}
+
+.stepDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2px solid var(--bg-main);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+  z-index: 1;
+}
+
+.stepContent {
+  flex: 1;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--duration-fast);
+}
+
+.stepContent:hover {
+  border-color: var(--border-hover);
+}
+
+.stepIcon {
+  color: var(--primary-light);
+  margin-bottom: 0.75rem;
+}
+
+.stepTitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.stepDesc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  .stepLeft {
+    min-width: 50px;
+  }
+
+  .timeline {
+    left: 24px;
+  }
+
+  .stepContent {
+    padding: 1.25rem;
+  }
+}

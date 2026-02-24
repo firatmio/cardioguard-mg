@@ -1,0 +1,47 @@
+# dependencies (reinstalled on EAS servers)
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native (prebuild on server)
+/ios
+/android
+
+# Kotlin
+.kotlin/
+
+# Build artifacts
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# Debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# Local env files
+.env*.local
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Other project folders (not needed for mobile build)
+../web/
+../server/
+../esp32-holter-sim/
+__pycache__/

@@ -1,0 +1,258 @@
+.page {
+  padding-top: var(--header-height);
+}
+
+/* Hero */
+.hero {
+  padding: 5rem 1.5rem 3rem;
+  text-align: center;
+  position: relative;
+}
+
+.heroInner {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 0.35rem 1rem;
+  border: 1px solid var(--border-accent);
+  background: rgba(37, 99, 235, 0.06);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  color: var(--primary-light);
+  font-weight: 500;
+}
+
+.heroTitle {
+  font-size: 2.75rem;
+  font-weight: 750;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.heroSubtitle {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  max-width: 560px;
+}
+
+/* Sections */
+.section {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem;
+}
+
+.center {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.text {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 1rem;
+  max-width: 500px;
+}
+
+/* Split grid */
+.splitGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.missionImage {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  aspect-ratio: 4/3;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Tech card */
+.techCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.techBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  color: var(--primary-light);
+  font-weight: 500;
+}
+
+.techTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.techDesc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  max-width: 600px;
+}
+
+.techStats {
+  display: flex;
+  gap: 3rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.techStat {
+  text-align: center;
+}
+
+.techStatValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.techStatLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+/* Values */
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.valueCard {
+  padding: 2rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--duration-fast);
+}
+
+.valueCard:hover {
+  border-color: var(--border-hover);
+}
+
+.valueIcon {
+  color: var(--primary-light);
+  margin-bottom: 0.75rem;
+}
+
+.valueTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.valueDesc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* Team */
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.teamCard {
+  text-align: center;
+}
+
+.teamPhoto {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.teamImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.teamName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.teamRole {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2rem;
+  }
+
+  .splitGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .valuesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .teamGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .techStats {
+    gap: 1.5rem;
+  }
+
+  .techCard {
+    padding: 2rem 1.5rem;
+  }
+}

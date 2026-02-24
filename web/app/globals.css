@@ -1,0 +1,196 @@
+/* ==========================================================================
+   CardioGuard — Global Design System
+   Consistent with mobile app color palette (primary blue #2563EB)
+   Dark theme for marketing site
+   ========================================================================== */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  outline: none;
+  -webkit-user-drag: none;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* 2px boyutunda minik siyah noktalar oluşturur */
+  background: radial-gradient(circle, #000 1px, transparent 1px);
+  background-size: 3px 3px; 
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+:root {
+  /* Brand — matches mobile app */
+  --primary: #2563EB;
+  --primary-light: #3B82F6;
+  --primary-dark: #1D4ED8;
+  --primary-glow: rgba(37, 99, 235, 0.25);
+
+  /* Semantic — matches mobile */
+  --success: #16A34A;
+  --success-glow: rgba(22, 163, 74, 0.2);
+  --warning: #D97706;
+  --warning-glow: rgba(217, 119, 6, 0.2);
+  --danger: #DC2626;
+  --danger-glow: rgba(220, 38, 38, 0.2);
+  --info: #0891B2;
+
+  /* Backgrounds */
+  --bg-main: #06080D;
+  --bg-secondary: #0C0F16;
+  --bg-elevated: #111520;
+  --bg-card: rgba(255, 255, 255, 0.025);
+  --bg-card-hover: rgba(255, 255, 255, 0.05);
+
+  /* Text */
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #7C8CA0;
+  --text-dim: #64748B;
+
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  --border-accent: rgba(37, 99, 235, 0.3);
+
+  /* Glass */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur: blur(24px);
+
+  /* Layout */
+  --container-max: 1140px;
+  --section-gap: 7rem;
+  --header-height: 64px;
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text-dim);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Selection */
+::selection {
+  background: var(--primary);
+  color: white;
+}
+
+/* Utility */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Section shared styles */
+.sectionLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 1rem;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  color: var(--primary-light);
+  font-weight: 500;
+  backdrop-filter: var(--glass-blur);
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+.sectionSubtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 520px;
+  line-height: 1.7;
+}
+
+.gradient {
+  background: linear-gradient(135deg, var(--primary-light), var(--success));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (max-width: 768px) {
+  .sectionTitle {
+    font-size: 1.75rem;
+  }
+}
+
+* {
+  overflow-x: hidden;
+}

@@ -1,0 +1,363 @@
+/* ============================
+   Dashboard Layout
+   ============================ */
+
+.layout {
+  display: flex;
+  min-height: 100dvh;
+  background: var(--bg-main);
+}
+
+/* ===== Loading ===== */
+.loadingPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  background: var(--bg-main);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: 260px;
+  min-height: 100dvh;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.25rem 0.75rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.brandIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.brandText {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.closeSidebar {
+  display: none;
+  color: var(--text-muted);
+  padding: 0.3rem;
+  border-radius: 6px;
+  transition: color var(--duration-fast);
+}
+
+.closeSidebar:hover {
+  color: var(--text-primary);
+}
+
+.sidebarLabel {
+  padding: 1.25rem 1.25rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* Nav */
+.nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 0.75rem;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.navItem:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.navItemActive {
+  background: var(--primary-glow);
+  color: var(--primary-light);
+}
+
+.navItemActive:hover {
+  background: var(--primary-glow);
+  color: var(--primary-light);
+}
+
+/* Sidebar Footer */
+.sidebarFooter {
+  border-top: 1px solid var(--border);
+  padding: 0.75rem;
+}
+
+.userCard {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarFallback {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary-light);
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.userName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userEmail {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.logoutBtn:hover {
+  background: var(--danger-glow);
+  color: #fca5a5;
+}
+
+/* ===== Overlay ===== */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 35;
+}
+
+/* ===== Main ===== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ===== Topbar ===== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.topbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.menuBtn {
+  display: none;
+  color: var(--text-secondary);
+  padding: 0.3rem;
+  border-radius: 6px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.breadcrumbRoot {
+  color: var(--text-muted);
+}
+
+.breadcrumbCurrent {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbarIcon {
+  position: relative;
+  color: var(--text-secondary);
+  padding: 0.4rem;
+  border-radius: 8px;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.topbarIcon:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.notifDot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 7px;
+  height: 7px;
+  background: var(--danger);
+  border-radius: 50%;
+  border: 1.5px solid var(--bg-secondary);
+}
+
+.topbarAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* ===== Content ===== */
+.content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    height: 100dvh;
+    z-index: 50;
+    transition: left var(--duration-normal) var(--ease-out);
+    width: 270px;
+  }
+
+  .sidebarOpen {
+    left: 0;
+  }
+
+  .closeSidebar {
+    display: flex;
+  }
+
+  .overlay {
+    display: block;
+  }
+
+  .menuBtn {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 1rem;
+  }
+
+  .topbar {
+    padding: 0 1rem;
+  }
+}

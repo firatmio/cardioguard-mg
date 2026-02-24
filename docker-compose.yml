@@ -1,0 +1,149 @@
+# ==============================================================================
+# CardioGuard — Docker Compose (Production)
+# ==============================================================================
+# Kullanım:
+#   docker compose up -d              (tümünü başlat)
+#   docker compose up -d server web   (sadece server ve web)
+#   docker compose logs -f server     (server logları)
+#   docker compose down               (durdur)
+# ==============================================================================
+
+services:
+  # ────────────────────────────────────────────────────────
+  # Redis — Celery Broker + Cache
+  # ────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cardioguard
+
+  # ────────────────────────────────────────────────────────
+  # Server — FastAPI + AI Engine
+  # ────────────────────────────────────────────────────────
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./server/.env
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - cardioguard
+
+  # ────────────────────────────────────────────────────────
+  # Celery Worker — Background Tasks
+  # ────────────────────────────────────────────────────────
+  celery-worker:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: >
+      python -m celery -A workers.celery_app worker
+      --loglevel=info
+      --concurrency=4
+      --queues=ecg_queue,event_queue,llm_queue,notification_queue,default
+    env_file:
+      - ./server/.env
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - cardioguard
+
+  # ────────────────────────────────────────────────────────
+  # Celery Beat — Scheduled Tasks
+  # ────────────────────────────────────────────────────────
+  celery-beat:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: >
+      python -m celery -A workers.celery_app beat
+      --loglevel=info
+    env_file:
+      - ./server/.env
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - cardioguard
+
+  # ────────────────────────────────────────────────────────
+  # Web — Next.js Frontend
+  # ────────────────────────────────────────────────────────
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000/api/v1}
+        - NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
+        - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}
+        - NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID}
+        - NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}
+        - NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}
+        - NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    networks:
+      - cardioguard
+
+  # ────────────────────────────────────────────────────────
+  # Nginx — Reverse Proxy (opsiyonel, production)
+  # ────────────────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - server
+      - web
+    networks:
+      - cardioguard
+    profiles:
+      - with-nginx
+
+volumes:
+  redis_data:
+
+networks:
+  cardioguard:
+    driver: bridge

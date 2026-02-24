@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+.next/
+
+# Build
+out/
+
+# Environment
+.env*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Android (web'de gereksiz)
+android/
+
+# EAS
+.easignore
+eas.json
+app.json

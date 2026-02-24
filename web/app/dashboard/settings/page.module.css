@@ -1,0 +1,272 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.pageHeader {
+  margin-bottom: 0.25rem;
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.pageDesc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* Sections */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Profile */
+.profileRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.profileAvatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profileImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profileFallback {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary-light);
+}
+
+.profileInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.profileName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.profileEmail {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.providerBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  background: var(--primary-glow);
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--primary-light);
+  white-space: nowrap;
+}
+
+/* Field grid */
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.field {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+.field:nth-child(even) {
+  border-right: none;
+}
+
+.field:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+
+.fieldLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+.fieldValue {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.fieldValueMono {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: monospace;
+  word-break: break-all;
+}
+
+/* Settings rows */
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.settingRow:last-child {
+  border-bottom: none;
+}
+
+.settingInfo {
+  flex: 1;
+}
+
+.settingLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.settingDesc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+/* Toggle */
+.toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  position: relative;
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+  flex-shrink: 0;
+}
+
+.toggleOn {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.toggleDot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform var(--duration-fast);
+}
+
+.toggleOn .toggleDot {
+  transform: translateX(18px);
+}
+
+/* Info grid */
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.infoItem:nth-child(even) {
+  border-right: none;
+}
+
+.infoItem:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+
+.infoLabel {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  min-width: 60px;
+}
+
+.infoValue {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .fieldGrid,
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .field,
+  .infoItem {
+    border-right: none;
+  }
+
+  .field:last-child,
+  .infoItem:last-child {
+    border-bottom: none;
+  }
+
+  .profileRow {
+    flex-wrap: wrap;
+  }
+}

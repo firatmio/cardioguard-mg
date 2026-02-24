@@ -60,9 +60,6 @@
 
 ## 🎯 About the Project
 
-<table>
-<tr>
-<td width="70%">
 
 CardioGuard is being developed to democratize early diagnosis of cardiovascular diseases. The platform consists of four core components:
 
@@ -74,12 +71,7 @@ CardioGuard is being developed to democratize early diagnosis of cardiovascular 
 
 4. **ESP32 Holter Simulator** — Hardware simulator that generates realistic ECG waveforms (normal sinus, tachycardia, bradycardia, arrhythmia, noise) via BLE, enabling development without physical medical devices.
 
-</td>
-<td width="30%">
-
-<div align="center">
-
-**Target Users**
+### Target Users
 
 | Role | Usage |
 |------|-------|
@@ -88,11 +80,6 @@ CardioGuard is being developed to democratize early diagnosis of cardiovascular 
 | 🏥 **Clinics** | Bulk patient management |
 | 👨‍👩‍👧 **Emergency Contacts** | SMS alerts for critical events |
 
-</div>
-
-</td>
-</tr>
-</table>
 
 ---
 

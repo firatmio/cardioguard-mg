@@ -47,7 +47,7 @@ export default function DashboardLayout({
     router.replace("/login");
   };
 
-  // Auth yüklenirken
+  // While auth is loading
   if (loading) {
     return (
       <div className={styles.loadingPage}>
@@ -56,10 +56,10 @@ export default function DashboardLayout({
     );
   }
 
-  // Yetkisiz
+  // Unauthorized
   if (!user) return null;
 
-  // Breadcrumb oluştur
+  // Build breadcrumb
   const segments = pathname.split("/").filter(Boolean);
   const breadcrumbLabel =
     segments.length <= 1

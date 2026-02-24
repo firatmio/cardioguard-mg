@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactCompiler: true,
 
-  // Docker deploy için standalone output
+  // Standalone output for Docker deploy
   output: "standalone",
 
   images: {
@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Powered-by header'ını kaldır
+  // Remove Powered-by header
   poweredByHeader: false,
 };
 

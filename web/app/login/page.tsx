@@ -20,8 +20,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [patientWarning, setPatientWarning] = useState(false);
 
-  // Zaten giriş yapmışsa dashboard'a yönlendir
-  // patientWarning veya aktif login sırasında yönlendirme yapma
+  // Redirect to dashboard if already logged in
+  // Do not redirect during patientWarning or active login
   useEffect(() => {
     if (!authLoading && user && !patientWarning && !loading) {
       router.replace("/dashboard");
@@ -85,7 +85,7 @@ export default function LoginPage() {
     }
   };
 
-  // Auth yüklenirken skeleton göster
+  // Show skeleton while auth is loading
   if (authLoading) {
     return (
       <div className={styles.page}>
@@ -96,12 +96,12 @@ export default function LoginPage() {
     );
   }
 
-  // Zaten giriş yapmışsa boş göster (redirect olacak)
+  // Show nothing if already logged in (will redirect)
   if (user) return null;
 
   return (
     <div className={styles.page}>
-      {/* Sol — Dekoratif Alan */}
+      {/* Left — Decorative Area */}
       <div className={styles.decorSide}>
         <div className={styles.decorContent}>
           <div className={styles.decorLogo}>
@@ -135,14 +135,14 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Dekoratif daireler */}
+        {/* Decorative circles */}
         <div className={styles.decorCircle1} />
         <div className={styles.decorCircle2} />
       </div>
 
-      {/* Sağ — Login Formu */}
+      {/* Right — Login Form */}
       <div className={styles.formSide}>
-        {/* Mobilde logo */}
+        {/* Mobile logo */}
         <Link href="/" className={styles.mobileLogo}>
           <div className={styles.logoIcon}>
             <Heart size={18} strokeWidth={2.5} />
@@ -158,7 +158,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Hata mesajı */}
+          {/* Error message */}
           {error && (
             <div className={styles.errorBox}>
               <AlertCircle size={16} />
@@ -191,7 +191,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Google butonu */}
+          {/* Google button */}
           <button
             type="button"
             className={styles.googleBtn}
@@ -211,7 +211,7 @@ export default function LoginPage() {
             <span>or</span>
           </div>
 
-          {/* Email / Şifre formu */}
+          {/* Email / Password form */}
           <form onSubmit={handleEmailLogin} className={styles.form}>
             <div className={styles.inputGroup}>
               <label htmlFor="email" className={styles.label}>
@@ -224,7 +224,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="doktor@cardioguard.ai"
+                  placeholder="doctor@cardioguard.ai"
                   className={styles.input}
                   required
                   autoComplete="email"

@@ -219,7 +219,7 @@ export default function PatientDetailPage() {
     );
   }
 
-  // ── Derived (mergedPatient üzerinden) ──
+  // ── Derived (from mergedPatient) ──
   const displayPatient = mergedPatient;
 
   const patientStatus = displayPatient.status as string;
@@ -422,7 +422,7 @@ function OverviewTab({
         {stats ? (
           <div className={styles.baselineGrid}>
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Ort. Nabız</div>
+              <div className={styles.baselineLabel}>Avg. Heart Rate</div>
               <div className={styles.baselineValue}>
                 {(stats.avg_heart_rate ?? 0).toFixed(0)}
                 <span className={styles.baselineUnit}>bpm</span>
@@ -813,7 +813,7 @@ function ReportsTab({
             >
               <span className={styles.reportTitle}>
                 <Brain size={14} />
-                Olay: {rep.event_id.slice(0, 8)}…
+                Event: {rep.event_id.slice(0, 8)}…
                 <ChevronRight
                   size={14}
                   style={{

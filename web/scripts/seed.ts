@@ -1,14 +1,14 @@
 #!/usr/bin/env npx tsx
 // =============================================================================
-// SEED SCRIPT — Test verisi oluştur / temizle
+// SEED SCRIPT — Create / clean test data
 // =============================================================================
-// Kullanım:
-//   npx tsx scripts/seed.ts --doctor <doctorId>          # Seed verileri yaz
-//   npx tsx scripts/seed.ts --doctor <doctorId> --clean   # Seed verilerini sil
-//   npx tsx scripts/seed.ts --doctor <doctorId> --reset   # Sil + yeniden yaz
+// Usage:
+//   npx tsx scripts/seed.ts --doctor <doctorId>          # Write seed data
+//   npx tsx scripts/seed.ts --doctor <doctorId> --clean   # Delete seed data
+//   npx tsx scripts/seed.ts --doctor <doctorId> --reset   # Delete + rewrite
 //
-// Ortam değişkeni:
-//   API_BASE_URL  (varsayılan: http://localhost:8000/api/v1)
+// Environment variable:
+//   API_BASE_URL  (default: http://localhost:8000/api/v1)
 // =============================================================================
 
 const API_BASE = process.env.API_BASE_URL || "http://localhost:8000/api/v1";
@@ -38,20 +38,20 @@ async function api<T = unknown>(
 }
 
 // ---------------------------------------------------------------------------
-// Seed data tanımları
+// Seed data definitions
 // ---------------------------------------------------------------------------
 
 const SEED_PATIENTS = [
-  { firstName: "Ahmet", lastName: "Yılmaz", gender: "male", notes: "Atriyal Fibrilasyon" },
-  { firstName: "Fatma", lastName: "Kaya", gender: "female", notes: "Supraventriküler Taşikardi" },
-  { firstName: "Mehmet", lastName: "Demir", gender: "male", notes: "Bradikardi" },
-  { firstName: "Ayşe", lastName: "Çelik", gender: "female", notes: "ST-Segment Anomalisi" },
-  { firstName: "Ali", lastName: "Öztürk", gender: "male", notes: "Ventriküler Taşikardi" },
-  { firstName: "Zeynep", lastName: "Arslan", gender: "female", notes: "Atriyoventriküler Blok" },
-  { firstName: "Hasan", lastName: "Koç", gender: "male", notes: "Atriyal Flutter" },
-  { firstName: "Elif", lastName: "Yıldız", gender: "female", notes: "Sinüs Taşikardisi" },
-  { firstName: "Mustafa", lastName: "Şahin", gender: "male", notes: "QT Uzaması" },
-  { firstName: "Hatice", lastName: "Aydın", gender: "female", notes: "Erken Ventrikül Atımı" },
+  { firstName: "Ahmet", lastName: "Yilmaz", gender: "male", notes: "Atrial Fibrillation" },
+  { firstName: "Fatma", lastName: "Kaya", gender: "female", notes: "Supraventricular Tachycardia" },
+  { firstName: "Mehmet", lastName: "Demir", gender: "male", notes: "Bradycardia" },
+  { firstName: "Ayse", lastName: "Celik", gender: "female", notes: "ST-Segment Anomaly" },
+  { firstName: "Ali", lastName: "Ozturk", gender: "male", notes: "Ventricular Tachycardia" },
+  { firstName: "Zeynep", lastName: "Arslan", gender: "female", notes: "Atrioventricular Block" },
+  { firstName: "Hasan", lastName: "Koc", gender: "male", notes: "Atrial Flutter" },
+  { firstName: "Elif", lastName: "Yildiz", gender: "female", notes: "Sinus Tachycardia" },
+  { firstName: "Mustafa", lastName: "Sahin", gender: "male", notes: "QT Prolongation" },
+  { firstName: "Hatice", lastName: "Aydin", gender: "female", notes: "Premature Ventricular Contraction" },
 ];
 
 function buildAlerts(
@@ -60,14 +60,14 @@ function buildAlerts(
   doctorId: string
 ) {
   return [
-    { patientIdx: 0, type: "Taşikardi", severity: "critical", message: "Kalp hızı 165 bpm'e ulaştı." },
-    { patientIdx: 7, type: "ST-Segment Elevasyonu", severity: "critical", message: "Lead II'de belirgin ST-segment elevasyonu." },
-    { patientIdx: 1, type: "Bradikardi", severity: "urgent", message: "Kalp hızı 42 bpm'e düştü." },
-    { patientIdx: 3, type: "Düzensiz Ritim", severity: "warning", message: "Kısa süreli düzensiz ritim episodu." },
-    { patientIdx: 9, type: "Erken Ventrikül Atımı", severity: "warning", message: "Son 1 saatte 12 PVC tespit edildi." },
-    { patientIdx: 4, type: "Sinyal Kaybı", severity: "info", message: "Cihaz bağlantısı koptu." },
-    { patientIdx: 5, type: "AV Blok (2. derece)", severity: "urgent", message: "İkinci derece AV blok paterni." },
-    { patientIdx: 2, type: "Pause", severity: "warning", message: "2.1 saniyelik sinüs arrest kaydedildi." },
+    { patientIdx: 0, type: "Tachycardia", severity: "critical", message: "Heart rate reached 165 bpm." },
+    { patientIdx: 7, type: "ST-Segment Elevation", severity: "critical", message: "Significant ST-segment elevation in Lead II." },
+    { patientIdx: 1, type: "Bradycardia", severity: "urgent", message: "Heart rate dropped to 42 bpm." },
+    { patientIdx: 3, type: "Irregular Rhythm", severity: "warning", message: "Brief irregular rhythm episode." },
+    { patientIdx: 9, type: "Premature Ventricular Contraction", severity: "warning", message: "12 PVCs detected in the last hour." },
+    { patientIdx: 4, type: "Signal Loss", severity: "info", message: "Device connection lost." },
+    { patientIdx: 5, type: "AV Block (2nd degree)", severity: "urgent", message: "Second degree AV block pattern." },
+    { patientIdx: 2, type: "Pause", severity: "warning", message: "2.1 second sinus arrest recorded." },
   ].map((a) => ({
     patientId: patientIds[a.patientIdx] || "",
     patientName: `${patients[a.patientIdx]?.firstName} ${patients[a.patientIdx]?.lastName}`,
@@ -84,78 +84,78 @@ function buildAlerts(
 // ---------------------------------------------------------------------------
 
 async function seedData(doctorId: string): Promise<void> {
-  console.log("\n🌱 Seed verileri oluşturuluyor...\n");
+  console.log("\n🌱 Creating seed data...\n");
 
-  // Hastalar
+  // Patients
   const patientIds: string[] = [];
   for (const p of SEED_PATIENTS) {
     try {
       const result = await api<{ id: string }>("POST", `/patients/doctor/${doctorId}`, p);
       patientIds.push(result.id);
-      console.log(`  ✅ Hasta: ${p.firstName} ${p.lastName} (${result.id})`);
+      console.log(`  ✅ Patient: ${p.firstName} ${p.lastName} (${result.id})`);
     } catch (err) {
-      console.error(`  ❌ Hasta eklenemedi (${p.firstName}):`, (err as Error).message);
+      console.error(`  ❌ Could not add patient (${p.firstName}):`, (err as Error).message);
     }
   }
 
-  // Alertler
+  // Alerts
   const alerts = buildAlerts(patientIds, SEED_PATIENTS, doctorId);
   for (const a of alerts) {
     try {
       const result = await api<{ id: string }>("POST", "/alerts", a);
       console.log(`  ✅ Alert: ${a.type} → ${a.patientName} (${result.id})`);
     } catch (err) {
-      console.error(`  ❌ Alert eklenemedi (${a.type}):`, (err as Error).message);
+      console.error(`  ❌ Could not add alert (${a.type}):`, (err as Error).message);
     }
   }
 
-  console.log(`\n✅ Seed tamamlandı: ${patientIds.length} hasta, ${alerts.length} alert.\n`);
+  console.log(`\n✅ Seed complete: ${patientIds.length} patients, ${alerts.length} alerts.\n`);
 }
 
 async function cleanData(doctorId: string): Promise<void> {
-  console.log("\n🧹 Seed verileri temizleniyor...\n");
+  console.log("\n🧹 Cleaning seed data...\n");
 
-  // Hastaları getir
+  // Get patients
   let patients: { id: string; name?: string }[] = [];
   try {
     patients = await api<{ id: string; name?: string }[]>("GET", `/patients/doctor/${doctorId}`);
   } catch {
-    console.log("  ℹ️  Hasta bulunamadı veya endpoint erişilemedi.");
+    console.log("  ℹ️  No patients found or endpoint not accessible.");
   }
 
-  // Alertleri getir
+  // Get alerts
   let alerts: { id: string; type?: string }[] = [];
   try {
     alerts = await api<{ id: string; type?: string }[]>("GET", `/alerts/doctor/${doctorId}`);
   } catch {
-    console.log("  ℹ️  Alert bulunamadı veya endpoint erişilemedi.");
+    console.log("  ℹ️  No alerts found or endpoint not accessible.");
   }
 
-  // Alertleri sil
+  // Delete alerts
   let deletedAlerts = 0;
   for (const a of alerts) {
     try {
       await api("DELETE", `/alerts/${a.id}`);
       deletedAlerts++;
-      console.log(`  🗑️  Alert silindi: ${a.type || a.id}`);
+      console.log(`  🗑️  Alert deleted: ${a.type || a.id}`);
     } catch (err) {
-      console.error(`  ❌ Alert silinemedi (${a.id}):`, (err as Error).message);
+      console.error(`  ❌ Could not delete alert (${a.id}):`, (err as Error).message);
     }
   }
 
-  // Hastaları sil
+  // Delete patients
   let deletedPatients = 0;
   for (const p of patients) {
     try {
       await api("DELETE", `/patients/${p.id}`);
       deletedPatients++;
-      console.log(`  🗑️  Hasta silindi: ${p.name || p.id}`);
+      console.log(`  🗑️  Patient deleted: ${p.name || p.id}`);
     } catch (err) {
-      console.error(`  ❌ Hasta silinemedi (${p.id}):`, (err as Error).message);
+      console.error(`  ❌ Could not delete patient (${p.id}):`, (err as Error).message);
     }
   }
 
-  console.log(`\n🧹 Temizlik tamamlandı: ${deletedPatients} hasta, ${deletedAlerts} alert silindi.\n`);
+  console.log(`\n🧹 Cleanup complete: ${deletedPatients} patients, ${deletedAlerts} alerts deleted.\n`);
 }
 
 // ---------------------------------------------------------------------------
@@ -169,7 +169,7 @@ async function main() {
   const doctorId = doctorIdx !== -1 ? args[doctorIdx + 1] : undefined;
 
   if (!doctorId) {
-    console.error("Kullanım: npx tsx scripts/seed.ts --doctor <doctorId> [--clean | --reset]");
+    console.error("Usage: npx tsx scripts/seed.ts --doctor <doctorId> [--clean | --reset]");;
     process.exit(1);
   }
 
@@ -190,6 +190,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("\n💥 Hata:", err);
+  console.error("\n💥 Error:", err);
   process.exit(1);
 });

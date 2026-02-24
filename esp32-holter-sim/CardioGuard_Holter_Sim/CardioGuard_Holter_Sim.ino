@@ -1,30 +1,30 @@
 // =============================================================================
 // CardioGuard ESP32 Holter ECG Simulator
 // =============================================================================
-// Bu firmware, ESP32 kartını bir BLE Holter ECG cihazı olarak simüle eder.
-// Mobil uygulama (CardioGuard Patient App) ile birebir uyumludur.
+// This firmware simulates the ESP32 board as a BLE Holter ECG device.
+// Fully compatible with the mobile app (CardioGuard Patient App).
 //
-// Arduino IDE Ayarları:
+// Arduino IDE Settings:
 //   Board:            "ESP32 Dev Module"
 //   Upload Speed:     "921600"
 //   Flash Size:       "4MB (32Mb)"
 //   Partition Scheme: "Default 4MB with spiffs"
-//   Port:             (ESP32'nin bağlı olduğu COM portu)
+//   Port:             (COM port where ESP32 is connected)
 //
-// Eşleşme protokolü:
-//   - Cihaz adı: "CardioGuard-SIM" (mobil uygulama "CardioGuard" prefix ile filtreler)
-//   - Heart Rate Service (0x180D) üzerinden ECG verileri
-//   - Battery Service (0x180F) ile pil seviyesi
-//   - Device Information Service (0x180A) ile firmware bilgisi
+// Pairing Protocol:
+//   - Device name: "CardioGuard-SIM" (mobile app filters by "CardioGuard" prefix)
+//   - ECG data transmitted over Heart Rate Service (0x180D)
+//   - Battery level via Battery Service (0x180F)
+//   - Firmware info via Device Information Service (0x180A)
 //
-// Paket Formatı (mobil ECGParser.ts ile birebir uyumlu):
-//   [0-1]  uint16  Sıra numarası (little-endian)
-//   [2-3]  uint16  Bu paketteki örnek sayısı (little-endian)
-//   [4+]   int16[] Ham ADC değerleri (little-endian, her biri 2 byte)
+// Packet Format (matches mobile ECGParser.ts exactly):
+//   [0-1]  uint16  Sequence number (little-endian)
+//   [2-3]  uint16  Number of samples in this packet (little-endian)
+//   [4+]   int16[] Raw ADC values (little-endian, 2 bytes each)
 //
-// Potansiyometre (GPIO 34) ile nabız ayarlanabilir: 40-180 BPM
-// Dahili LED (GPIO 2) ile kalp atışı göstergesi
-// BOOT butonu (GPIO 0) ile aritmia tetikleme
+// Heart rate adjustable via potentiometer (GPIO 34): 40-180 BPM
+// Built-in LED (GPIO 2) as heartbeat indicator
+// BOOT button (GPIO 0) to trigger arrhythmia
 // =============================================================================
 
 #include <BLEDevice.h>
@@ -32,22 +32,21 @@
 #include <BLEUtils.h>
 #include <BLE2902.h>
 #include <math.h>
-#include <esp_task_wdt.h>   // Watchdog kontrolu icin
-//dogum günün kutlu olsun adamsın quaresma eyvallah
+#include <esp_task_wdt.h>   // For watchdog control
 // ─────────────────────────────────────────────────────────────────────────────
-// Configuration — Mobil uygulama ile eşleşen değerler
+// Configuration — Values matching the mobile app
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Cihaz adı (BLE_CONFIG.deviceNamePrefix = "CardioGuard" ile eşleşir)
+// Device name (matches BLE_CONFIG.deviceNamePrefix = "CardioGuard")
 #define DEVICE_NAME "CardioGuard-SIM"
 
-// Firmware versiyonu
+// Firmware version
 #define FIRMWARE_VERSION "SIM-ESP32-1.0.0"
 
 // ─── BLE Service & Characteristic UUIDs ─────────────────────────────────────
-// Bunlar mobile/src/types/device.ts → ECG_SERVICE_UUIDS ile birebir aynıdır.
+// These are identical to mobile/src/types/device.ts → ECG_SERVICE_UUIDS.
 
-// Heart Rate Service (ECG verisi bu servis üzerinden gider)
+// Heart Rate Service (ECG data is sent over this service)
 #define ECG_SERVICE_UUID        "0000180d-0000-1000-8000-00805f9b34fb"
 #define ECG_DATA_CHAR_UUID      "00002a37-0000-1000-8000-00805f9b34fb"
 
@@ -59,30 +58,30 @@
 #define DEVICE_INFO_SERVICE_UUID    "0000180a-0000-1000-8000-00805f9b34fb"
 #define FIRMWARE_VERSION_CHAR_UUID  "00002a26-0000-1000-8000-00805f9b34fb"
 
-// ─── ECG Sinyal Konfigürasyonu ──────────────────────────────────────────────
-// Bunlar mobile/src/constants/config.ts → ECG_CONFIG ile eşleşir.
+// ─── ECG Signal Configuration ───────────────────────────────────────────────
+// These match mobile/src/constants/config.ts → ECG_CONFIG.
 
-#define SAMPLE_RATE       250     // Hz — sampleRate ile aynı
-#define ADC_TO_MV         0.00286 // Kalibrasyon faktörü — adcToMv ile aynı
-#define SAMPLES_PER_PACKET 8      // Her BLE paketinde gönderilen örnek sayısı (4+8*2=20 byte, varsayılan MTU'ya sığar)
+#define SAMPLE_RATE       250     // Hz — same as sampleRate
+#define ADC_TO_MV         0.00286 // Calibration factor — same as adcToMv
+#define SAMPLES_PER_PACKET 8      // Number of samples per BLE packet (4+8*2=20 bytes, fits default MTU)
 #define PACKET_INTERVAL_MS 32     // (1000 / SAMPLE_RATE) * SAMPLES_PER_PACKET = 32ms
 
-// ─── Donanım Pinleri ────────────────────────────────────────────────────────
-// DeneyapKart A1: Dahili mavi LED = GPIO 13 (LEDB)
-// Standart ESP32 DevKit kullanıyorsanız LED_PIN'i 2 yapın.
-#define LED_PIN       13      // DeneyapKart A1 dahili LED (LEDB)
-#define POT_PIN       34      // Potansiyometre (BPM ayarı, opsiyonel)
-// DIKKAT: DeneyapKart'ta "D8" etiketi GPIO 8 DEGIL!
-// GPIO 6-11 SPI Flash'a bagli — kullanmak crash yapar.
-// BOOT butonu (GPIO 0) tum ESP32 kartlarda guvenlidir.
-#define BUTTON_PIN    0       // BOOT butonu (GPIO 0) — aritmia tetikleme
+// ─── Hardware Pins ──────────────────────────────────────────────────────────
+// DeneyapKart A1: Built-in blue LED = GPIO 13 (LEDB)
+// If using a standard ESP32 DevKit, set LED_PIN to 2.
+#define LED_PIN       13      // DeneyapKart A1 built-in LED (LEDB)
+#define POT_PIN       34      // Potentiometer (BPM adjustment, optional)
+// WARNING: On DeneyapKart, the "D8" label is NOT GPIO 8!
+// GPIO 6-11 are connected to SPI Flash — using them causes a crash.
+// BOOT button (GPIO 0) is safe on all ESP32 boards.
+#define BUTTON_PIN    0       // BOOT button (GPIO 0) — arrhythmia trigger
 
-// ─── Pil Simülasyonu ────────────────────────────────────────────────────────
+// ─── Battery Simulation ─────────────────────────────────────────────────────
 #define BATTERY_START_LEVEL  95
-#define BATTERY_DRAIN_INTERVAL_MS 120000  // Her 2 dakikada 1% düşüş
+#define BATTERY_DRAIN_INTERVAL_MS 120000  // 1% drop every 2 minutes
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Global Değişkenler
+// Global Variables
 // ─────────────────────────────────────────────────────────────────────────────
 
 BLEServer*         pServer         = nullptr;
@@ -95,22 +94,22 @@ bool oldDeviceConnected = false;
 uint16_t sequenceNumber = 0;
 uint8_t  batteryLevel   = BATTERY_START_LEVEL;
 
-// ECG dalga formu üretimi
+// ECG waveform generation
 uint32_t sampleIndex     = 0;
 float    heartRateBPM    = 72.0;
-float    rrIntervalSamples;  // R-R aralığı (sample cinsinden)
+float    rrIntervalSamples;  // R-R interval (in samples)
 float    nextRPeakAt;
 
-// Zamanlayıcılar
+// Timers
 unsigned long lastPacketTime   = 0;
 unsigned long lastBatteryTime  = 0;
 unsigned long lastLEDTime      = 0;
 bool          ledState         = false;
 
-// Aritmia simülasyonu
+// Arrhythmia simulation
 bool arrhythmiaMode = false;
 unsigned long arrhythmiaStart = 0;
-#define ARRHYTHMIA_DURATION_MS 10000  // 10 saniyelik aritmia
+#define ARRHYTHMIA_DURATION_MS 10000  // 10-second arrhythmia
 
 // ─────────────────────────────────────────────────────────────────────────────
 // BLE Server Callbacks
@@ -119,24 +118,24 @@ unsigned long arrhythmiaStart = 0;
 class MyServerCallbacks : public BLEServerCallbacks {
   void onConnect(BLEServer* server) override {
     deviceConnected = true;
-    Serial.println("[BLE] Cihaz baglandi!");
+    Serial.println("[BLE] Device connected!");
   }
 
   void onDisconnect(BLEServer* server) override {
     deviceConnected = false;
-    Serial.println("[BLE] Baglanti kesildi.");
-    // Yeniden reklam yap — DELAY KULLANMA!
-    // delay() burada BLE event callback'i bloklar ve stack corruption'a
-    // yol acabilir. Bunun yerine reklami loop() icinde baslatiyoruz.
+    Serial.println("[BLE] Connection lost.");
+    // Re-advertise — DO NOT USE DELAY!
+    // delay() here blocks the BLE event callback and can cause
+    // stack corruption. Instead, we start advertising in loop().
   }
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ECG Dalga Formu Üreteci
+// ECG Waveform Generator
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Gaussian fonksiyonu — ECG dalga bilesenlerini modellemek icin.
+ * Gaussian function — used to model ECG waveform components.
  */
 float gaussian(float x, float center, float width) {
   float diff = x - center;
@@ -144,16 +143,16 @@ float gaussian(float x, float center, float width) {
 }
 
 /**
- * Tek bir ECG ornegi uret (mV cinsinden).
+ * Generate a single ECG sample (in mV).
  * 
- * Normal sinus ritmi modeli:
- *   - P dalgasi: QRS'den once kucuk pozitif yukselme
- *   - QRS kompleksi: Keskin R-peak, Q ve S sapmalari
- *   - T dalgasi: QRS'den sonra genis pozitif dalga
- *   - U dalgasi: Cok kucuk (gercekcilik icin)
+ * Normal sinus rhythm model:
+ *   - P wave: Small positive deflection before QRS
+ *   - QRS complex: Sharp R-peak, Q and S deflections
+ *   - T wave: Wide positive wave after QRS
+ *   - U wave: Very small (for realism)
  */
 float generateECGSample(uint32_t idx) {
-  // Beat icindeki konum (0.0 - 1.0)
+  // Position within beat (0.0 - 1.0)
   float beatStart = nextRPeakAt - rrIntervalSamples;
   float posInBeat = fmod((float)(idx - (uint32_t)beatStart), rrIntervalSamples) / rrIntervalSamples;
   if (posInBeat < 0) posInBeat += 1.0;
@@ -161,84 +160,84 @@ float generateECGSample(uint32_t idx) {
   float value = 0.0;
 
   if (arrhythmiaMode) {
-    // PVC (Premature Ventricular Contraction) simulasyonu
+    // PVC (Premature Ventricular Contraction) simulation
     float jitter = sin(idx * 0.1) * 0.15;
     
-    // Genis QRS
-    value += gaussian(posInBeat, 0.20, 0.018) * 0.08;   // Kucuk P
-    value -= gaussian(posInBeat, 0.22, 0.015) * 0.20;    // Derin Q
-    value += gaussian(posInBeat, 0.25, 0.020) * 1.8;     // Yuksek R
-    value -= gaussian(posInBeat, 0.30, 0.018) * 0.50;    // Derin S
-    value += gaussian(posInBeat, 0.45, 0.060) * (-0.25); // Ters T
+    // Wide QRS
+    value += gaussian(posInBeat, 0.20, 0.018) * 0.08;   // Small P
+    value -= gaussian(posInBeat, 0.22, 0.015) * 0.20;    // Deep Q
+    value += gaussian(posInBeat, 0.25, 0.020) * 1.8;     // Tall R
+    value -= gaussian(posInBeat, 0.30, 0.018) * 0.50;    // Deep S
+    value += gaussian(posInBeat, 0.45, 0.060) * (-0.25); // Inverted T
     value += jitter * gaussian(posInBeat, 0.60, 0.05);
   } else {
-    // Normal Sinus Ritmi
+    // Normal Sinus Rhythm
     
-    // P dalgasi
+    // P wave
     value += gaussian(posInBeat, 0.12, 0.025) * 0.15;
 
-    // Q dalgasi
+    // Q wave
     value -= gaussian(posInBeat, 0.20, 0.008) * 0.10;
 
     // R peak
     value += gaussian(posInBeat, 0.22, 0.010) * 1.20;
 
-    // S dalgasi
+    // S wave
     value -= gaussian(posInBeat, 0.24, 0.008) * 0.25;
 
-    // T dalgasi
+    // T wave
     value += gaussian(posInBeat, 0.38, 0.040) * 0.30;
 
-    // U dalgasi
+    // U wave
     value += gaussian(posInBeat, 0.50, 0.025) * 0.03;
   }
 
-  // Bazal cizgi surüklenmesi
+  // Baseline drift
   value += sin((float)idx / SAMPLE_RATE * 0.3) * 0.02;
 
-  // Gurultu ekleme
+  // Add noise
   value += ((float)random(-100, 100) / 100.0) * 0.015;
 
   return value;
 }
 
 /**
- * mV degerini ADC ham degerine cevir.
- * Mobil uygulama tersi yapar: raw * adcToMv = mV
- * Yani biz: mV / adcToMv = raw
+ * Convert mV value to raw ADC value.
+ * The mobile app does the reverse: raw * adcToMv = mV
+ * So we do: mV / adcToMv = raw
  */
 int16_t mvToADC(float mv) {
   return (int16_t)(mv / ADC_TO_MV);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// BLE Paket Gönderimi
+// BLE Packet Sending
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * ECG paketini olustur ve BLE notification olarak gonder.
+ * Build an ECG packet and send it as a BLE notification.
  * 
- * Paket formati (ECGParser.ts ile birebir uyumlu):
- *   Byte 0-1: uint16 sira numarasi (little-endian)
- *   Byte 2-3: uint16 ornek sayisi (little-endian)
- *   Byte 4+:  int16[] ADC degerleri (little-endian)
+ * Packet format (matches ECGParser.ts exactly):
+ *   Byte 0-1: uint16 sequence number (little-endian)
+ *   Byte 2-3: uint16 sample count (little-endian)
+ *   Byte 4+:  int16[] ADC values (little-endian)
  */
 void sendECGPacket() {
-  // Guard: baglanti veya characteristic yoksa cik
+  // Guard: exit if not connected or characteristic is null
   if (!deviceConnected || pECGChar == nullptr) return;
 
   const int packetSize = 4 + SAMPLES_PER_PACKET * 2;
   uint8_t packet[packetSize];
 
-  // Header: sira numarasi (uint16 LE)
+  // Header: sequence number (uint16 LE)
   packet[0] = sequenceNumber & 0xFF;
   packet[1] = (sequenceNumber >> 8) & 0xFF;
 
-  // Header: ornek sayisi (uint16 LE)
+  // Header: sample count (uint16 LE)
   packet[2] = SAMPLES_PER_PACKET & 0xFF;
   packet[3] = (SAMPLES_PER_PACKET >> 8) & 0xFF;
 
-  // Ornekleri uret ve pakete yaz
+  // Generate samples and write to packet
   for (int i = 0; i < SAMPLES_PER_PACKET; i++) {
     float mv = generateECGSample(sampleIndex);
     int16_t adcValue = mvToADC(mv);
@@ -249,13 +248,13 @@ void sendECGPacket() {
 
     sampleIndex++;
 
-    // R-peak kontrolu — yeni beat
+    // R-peak check — new beat
     if (sampleIndex >= (uint32_t)nextRPeakAt) {
-      // HRV: R-R araligini varyasyonla degistir
+      // HRV: vary the R-R interval
       float variation = ((float)random(-50, 50) / 1000.0) * rrIntervalSamples;
       float newRR = rrIntervalSamples + variation;
       
-      // Aritmia modunda duzensiz R-R
+      // Irregular R-R in arrhythmia mode
       if (arrhythmiaMode) {
         float extraVariation = ((float)random(-200, 200) / 1000.0) * rrIntervalSamples;
         newRR += extraVariation;
@@ -263,7 +262,7 @@ void sendECGPacket() {
       
       nextRPeakAt = sampleIndex + newRR;
 
-      // LED'i yak (kalp atisi gostergesi)
+      // Turn on LED (heartbeat indicator)
       digitalWrite(LED_PIN, HIGH);
       ledState = true;
       lastLEDTime = millis();
@@ -272,24 +271,24 @@ void sendECGPacket() {
 
   sequenceNumber++;
 
-  // BLE notification gonder
+  // Send BLE notification
   pECGChar->setValue(packet, packetSize);
   pECGChar->notify();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// BLE Servis Kurulumu
+// BLE Service Setup
 // ─────────────────────────────────────────────────────────────────────────────
 
 void setupBLE() {
-  Serial.println("[BLE] Baslatiliyor...");
+  Serial.println("[BLE] Initializing...");
 
-  // ── Watchdog'u BLE init suresi boyunca devre disi birak ──
-  // BLEDevice::init() Bluedroid stack'i baslatiyor ve bu islem
-  // 2-4 saniye surebilir. Varsayilan WDT timeout (5s) yetmiyor
-  // cunku ardindan 3 servis + advertising de kurulmali.
-  esp_task_wdt_deinit();  // WDT tamamen kapat
-  Serial.println("[BLE] Watchdog gecici olarak devre disi");
+  // ── Disable watchdog during BLE init ──
+  // BLEDevice::init() starts the Bluedroid stack which can take
+  // 2-4 seconds. The default WDT timeout (5s) is not enough
+  // since we also need to set up 3 services + advertising.
+  esp_task_wdt_deinit();  // Completely disable WDT
+  Serial.println("[BLE] Watchdog temporarily disabled");
 
   BLEDevice::init(DEVICE_NAME);
   Serial.println("[BLE] BLEDevice::init() OK");
@@ -297,7 +296,7 @@ void setupBLE() {
 
   pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
-  Serial.println("[BLE] Server olusturuldu");
+  Serial.println("[BLE] Server created");
   delay(100);
 
   // === ECG Servisi (Heart Rate Service 0x180D) ===
@@ -309,7 +308,7 @@ void setupBLE() {
   );
   pECGChar->addDescriptor(new BLE2902());
   ecgService->start();
-  Serial.println("[BLE] ECG servisi OK");
+  Serial.println("[BLE] ECG service OK");
   delay(100);
 
   // === Battery Servisi (0x180F) ===
@@ -322,7 +321,7 @@ void setupBLE() {
   pBatteryChar->addDescriptor(new BLE2902());
   pBatteryChar->setValue(&batteryLevel, 1);
   batteryService->start();
-  Serial.println("[BLE] Battery servisi OK");
+  Serial.println("[BLE] Battery service OK");
   delay(100);
 
   // === Device Information Servisi (0x180A) ===
@@ -334,10 +333,10 @@ void setupBLE() {
   );
   pFirmwareChar->setValue(FIRMWARE_VERSION);
   deviceInfoService->start();
-  Serial.println("[BLE] DeviceInfo servisi OK");
+  Serial.println("[BLE] DeviceInfo service OK");
   delay(100);
 
-  // === Reklam (Advertising) ===
+  // === Advertising ===
   BLEAdvertising* pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(ECG_SERVICE_UUID);
   pAdvertising->setScanResponse(true);
@@ -345,34 +344,34 @@ void setupBLE() {
   pAdvertising->setMaxPreferred(0x12);
   
   BLEDevice::startAdvertising();
-  Serial.println("[BLE] Reklam baslatildi — baglanti bekleniyor...");
-  Serial.print("[BLE] Cihaz adi: ");
+  Serial.println("[BLE] Advertising started — waiting for connection...");
+  Serial.print("[BLE] Device name: ");
   Serial.println(DEVICE_NAME);
 
-  // ── Watchdog'u yeniden etkinlestir ──
-  esp_task_wdt_init(10, true);  // 10 saniye timeout, panic=true
-  esp_task_wdt_add(NULL);       // Mevcut task'i WDT'ye ekle
-  Serial.println("[BLE] Watchdog yeniden aktif (10s)");
+  // ── Re-enable watchdog ──
+  esp_task_wdt_init(10, true);  // 10 second timeout, panic=true
+  esp_task_wdt_add(NULL);       // Add current task to WDT
+  Serial.println("[BLE] Watchdog re-enabled (10s)");
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Potansiyometre ile BPM Ayarlama
+// Potentiometer BPM Adjustment
 // ─────────────────────────────────────────────────────────────────────────────
 
 void updateHeartRateFromPot() {
   int potValue = analogRead(POT_PIN);
   
-  // Floating pin kontrolu (potansiyometre yoksa dalgalanmayi yoksay)
+  // Floating pin check (ignore fluctuations if no potentiometer connected)
   static int lastPotValue = -1;
   if (lastPotValue != -1 && abs(potValue - lastPotValue) < 200) {
-    return;  // Kucuk degisimler floating pin gurultusu — yoksay
+    return;  // Small changes are floating pin noise — ignore
   }
   lastPotValue = potValue;
   
   // 0-4095 → 40-180 BPM
   float newBPM = 40.0 + (potValue / 4095.0) * 140.0;
   
-  // Ani degisimleri yumusat
+  // Smooth sudden changes
   heartRateBPM = heartRateBPM * 0.9 + newBPM * 0.1;
   rrIntervalSamples = (60.0 / heartRateBPM) * SAMPLE_RATE;
 }
@@ -383,93 +382,93 @@ void updateHeartRateFromPot() {
 
 void setup() {
   Serial.begin(115200);
-  delay(1000);  // Seri port + PSRAM stabilizasyonu icin bekle
+  delay(1000);  // Wait for serial port + PSRAM stabilization
   Serial.println();
   Serial.println("========================================");
   Serial.println("  CardioGuard ESP32 Holter ECG Simulator");
-  Serial.println("  DeneyapKart 1A | BLE Hazir");
+  Serial.println("  DeneyapKart 1A | BLE Ready");
   Serial.println("========================================");
   Serial.println();
 
-  // PSRAM kontrolu
+  // PSRAM check
   if (psramFound()) {
-    Serial.printf("[SYS] PSRAM: %u KB kullanilabilir\n", ESP.getFreePsram() / 1024);
+    Serial.printf("[SYS] PSRAM: %u KB available\n", ESP.getFreePsram() / 1024);
   } else {
-    Serial.println("[SYS] PSRAM bulunamadi (sorun degil, gerekli degil)");
+    Serial.println("[SYS] PSRAM not found (not a problem, not required)");
   }
   Serial.printf("[SYS] Free Heap: %u KB\n", ESP.getFreeHeap() / 1024);
 
-  // Pin ayarlari
+  // Pin setup
   pinMode(LED_PIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   analogReadResolution(12);  // ESP32 ADC 12-bit
 
-  // ECG parametreleri baslat
+  // Initialize ECG parameters
   heartRateBPM = 72.0;
   rrIntervalSamples = (60.0 / heartRateBPM) * SAMPLE_RATE;
   nextRPeakAt = rrIntervalSamples;
 
-  // BLE baslat
-  Serial.println("[BLE] Baslatiliyor... (bu 2-3 sn surabilir)");
-  delay(100);  // Watchdog'a nefes aldir
+  // Start BLE
+  Serial.println("[BLE] Initializing... (this may take 2-3 seconds)");
+  delay(100);  // Let the watchdog breathe
   setupBLE();
 
   Serial.println();
-  Serial.println("[INFO] Komutlar:");
-  Serial.println("  Potansiyometre (GPIO 34): BPM ayari (40-180)");
-  Serial.println("  D8 butonu:                Aritmia modu");
-  Serial.println("  Seri port 'b' + Enter:    BPM yazdir");
-  Serial.println("  Seri port 'a' + Enter:    Aritmia tetikle");
-  Serial.println("  Seri port '+' / '-':       BPM +10 / -10");
-  Serial.println("  Seri port 'r':             Pil sifirla");
-  Serial.println("  Seri port 'h':             Yardim");
+  Serial.println("[INFO] Commands:");
+  Serial.println("  Potentiometer (GPIO 34): BPM adjustment (40-180)");
+  Serial.println("  D8 button:               Arrhythmia mode");
+  Serial.println("  Serial 'b' + Enter:      Print BPM");
+  Serial.println("  Serial 'a' + Enter:      Trigger arrhythmia");
+  Serial.println("  Serial '+' / '-':         BPM +10 / -10");
+  Serial.println("  Serial 'r':               Reset battery");
+  Serial.println("  Serial 'h':               Help");
   Serial.println();
 }
 
 void loop() {
   unsigned long now = millis();
 
-  // Watchdog'u besle — loop dongusu 10s icinde donmezse reset olur
+  // Feed the watchdog — resets if loop doesn't return within 10s
   esp_task_wdt_reset();
 
-  // Baglanti durumu degisimi
+  // Connection state change
   if (deviceConnected && !oldDeviceConnected) {
     sequenceNumber = 0;
     sampleIndex = 0;
     nextRPeakAt = rrIntervalSamples;
-    Serial.println("[ECG] Streaming basliyor...");
+    Serial.println("[ECG] Streaming started...");
     oldDeviceConnected = true;
   }
   if (!deviceConnected && oldDeviceConnected) {
-    Serial.println("[ECG] Streaming durduruldu.");
+    Serial.println("[ECG] Streaming stopped.");
     oldDeviceConnected = false;
-    // Yeniden reklam baslatma — onDisconnect callback'i yerine
-    // burada yapiyoruz cunku callback icindeki delay() BLE stack'i
-    // bloklar ve bozuk disconnect/reconnect dongusune yol acar.
-    delay(100);  // BLE stack cleanup icin minimal bekleme
+    // Re-advertise — done here instead of in onDisconnect callback
+    // because delay() inside the callback blocks the BLE stack
+    // and can cause broken disconnect/reconnect loops.
+    delay(100);  // Minimal wait for BLE stack cleanup
     BLEDevice::startAdvertising();
-    Serial.println("[BLE] Yeniden reklam baslatildi.");
+    Serial.println("[BLE] Re-advertising started.");
   }
 
-  // ECG Paket Gonderimi
+  // ECG Packet Sending
   if (deviceConnected && (now - lastPacketTime >= PACKET_INTERVAL_MS)) {
     lastPacketTime = now;
     sendECGPacket();
 
-    // Her 250 pakette (10 saniye) durum yazdir
+    // Print status every 250 packets (10 seconds)
     if (sequenceNumber % 250 == 0) {
       Serial.print("[ECG] seq=");
       Serial.print(sequenceNumber);
       Serial.print("  BPM=");
       Serial.print(heartRateBPM, 0);
-      Serial.print("  pil=");
+      Serial.print("  bat=");
       Serial.print(batteryLevel);
-      Serial.print("%  aritmia=");
-      Serial.println(arrhythmiaMode ? "EVET" : "hayir");
+      Serial.print("%  arrhythmia=");
+      Serial.println(arrhythmiaMode ? "YES" : "no");
     }
   }
 
-  // Pil Simulasyonu
+  // Battery Simulation
   if (now - lastBatteryTime >= BATTERY_DRAIN_INTERVAL_MS) {
     lastBatteryTime = now;
     if (batteryLevel > 5) batteryLevel--;
@@ -479,40 +478,40 @@ void loop() {
       pBatteryChar->notify();
     }
     
-    Serial.print("[BAT] Pil: ");
+    Serial.print("[BAT] Battery: ");
     Serial.print(batteryLevel);
     Serial.println("%");
   }
 
-  // LED Kontrolu
+  // LED Control
   if (ledState && (now - lastLEDTime > 50)) {
     digitalWrite(LED_PIN, LOW);
     ledState = false;
   }
 
-  // Potansiyometre (her 500ms)
+  // Potentiometer (every 500ms)
   static unsigned long lastPotRead = 0;
   if (now - lastPotRead >= 500) {
     lastPotRead = now;
     updateHeartRateFromPot();
   }
 
-  // BOOT Butonu -> Aritmia Tetikleme
+  // BOOT Button -> Arrhythmia Trigger
   if (digitalRead(BUTTON_PIN) == LOW) {
     if (!arrhythmiaMode) {
       arrhythmiaMode = true;
       arrhythmiaStart = now;
-      Serial.println("[ECG] Aritmia modu AKTIF (PVC simulasyonu)");
+      Serial.println("[ECG] Arrhythmia mode ACTIVE (PVC simulation)");
     }
   }
   
-  // Aritmia suresini kontrol et
+  // Check arrhythmia duration
   if (arrhythmiaMode && (now - arrhythmiaStart >= ARRHYTHMIA_DURATION_MS)) {
     arrhythmiaMode = false;
-    Serial.println("[ECG] Normal ritim");
+    Serial.println("[ECG] Normal rhythm");
   }
 
-  // Seri Port Komutlari
+  // Serial Port Commands
   if (Serial.available()) {
     char cmd = Serial.read();
     switch (cmd) {
@@ -528,8 +527,8 @@ void loop() {
       case 'A':
         arrhythmiaMode = !arrhythmiaMode;
         arrhythmiaStart = now;
-        Serial.print("[ECG] Aritmia: ");
-        Serial.println(arrhythmiaMode ? "AKTIF" : "kapatildi");
+        Serial.print("[ECG] Arrhythmia: ");
+        Serial.println(arrhythmiaMode ? "ACTIVE" : "disabled");
         break;
       case 'r':
       case 'R':
@@ -538,30 +537,30 @@ void loop() {
           pBatteryChar->setValue(&batteryLevel, 1);
           pBatteryChar->notify();
         }
-        Serial.println("[BAT] Pil sifirlandi -> 95%");
+        Serial.println("[BAT] Battery reset -> 95%");
         break;
       case '+':
         heartRateBPM = min(180.0f, heartRateBPM + 10.0f);
         rrIntervalSamples = (60.0 / heartRateBPM) * SAMPLE_RATE;
-        Serial.print("[ECG] BPM artirildi -> ");
+        Serial.print("[ECG] BPM increased -> ");
         Serial.println(heartRateBPM, 0);
         break;
       case '-':
         heartRateBPM = max(40.0f, heartRateBPM - 10.0f);
         rrIntervalSamples = (60.0 / heartRateBPM) * SAMPLE_RATE;
-        Serial.print("[ECG] BPM azaltildi -> ");
+        Serial.print("[ECG] BPM decreased -> ");
         Serial.println(heartRateBPM, 0);
         break;
       case 'h':
       case 'H':
         Serial.println();
-        Serial.println("=== Komutlar ===");
-        Serial.println("  b: BPM goster");
-        Serial.println("  a: Aritmia tetikle/kapat");
-        Serial.println("  r: Pil sifirla");
+        Serial.println("=== Commands ===");
+        Serial.println("  b: Show BPM");
+        Serial.println("  a: Toggle arrhythmia");
+        Serial.println("  r: Reset battery");
         Serial.println("  +: BPM +10");
         Serial.println("  -: BPM -10");
-        Serial.println("  h: Yardim");
+        Serial.println("  h: Help");
         Serial.println();
         break;
     }

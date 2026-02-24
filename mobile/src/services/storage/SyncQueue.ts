@@ -239,7 +239,7 @@ class SyncQueue {
     try {
       const segments: ECGSegment[] = items.map((item) => JSON.parse(item.payload));
 
-      // ── 1) Pipeline analiz (analiz + kayıt birlikte) ────────────────────
+      // ── 1) Pipeline analysis (analysis + recording together) ────────────────────
       const pipeline = PipelineService.getInstance();
       const pipelineResult = await pipeline.analyzeBatch(segments);
 

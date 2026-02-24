@@ -1,8 +1,8 @@
 // =============================================================================
-// Firestore Service — API üzerinden CRUD (Sunucu merkezli)
+// Firestore Service — CRUD via API (Server-centric)
 // =============================================================================
-// Tüm CRUD işlemleri artık FastAPI sunucusu üzerinden yürütülür.
-// Real-time dinleme (onSnapshot) hâlâ doğrudan Firestore'dadır (realtime.ts).
+// All CRUD operations are now executed through the FastAPI server.
+// Real-time listening (onSnapshot) is still directly on Firestore (realtime.ts).
 // =============================================================================
 
 import api from "../api";
@@ -21,7 +21,7 @@ import type {
 } from "./types";
 
 // ---------------------------------------------------------------------------
-// KAYITLI KULLANICI ARAMA (server: GET /users/search)
+// REGISTERED USER SEARCH (server: GET /users/search)
 // ---------------------------------------------------------------------------
 
 export async function searchRegisteredUsers(
@@ -47,7 +47,7 @@ export async function searchRegisteredUsers(
 }
 
 /**
- * Kayıtlı bir kullanıcıyı doktorun hasta listesine ekler.
+ * Adds a registered user to the doctor's patient list.
  * Server: POST /patients/doctor/{doctorId}/from-user
  */
 export async function addPatientFromUser(
@@ -67,16 +67,16 @@ export async function addPatientFromUser(
 }
 
 // ---------------------------------------------------------------------------
-// HASTA İŞLEMLERİ (server: /patients/*)
+// PATIENT OPERATIONS (server: /patients/*)
 // ---------------------------------------------------------------------------
 
-/** Doktora ait tüm hastaları getir — Server: GET /patients/doctor/{doctorId} */
+/** Get all patients of the doctor — Server: GET /patients/doctor/{doctorId} */
 export async function getPatients(doctorId: string): Promise<PatientDoc[]> {
   const data = await api.get<Record<string, unknown>[]>(`/patients/doctor/${doctorId}`);
   return data.map(normalizePatient);
 }
 
-/** Tek hasta getir — Server: GET /patients/{patientId} */
+/** Get single patient — Server: GET /patients/{patientId} */
 export async function getPatient(patientId: string): Promise<PatientDoc | null> {
   try {
     const data = await api.get<Record<string, unknown>>(`/patients/${patientId}`);
@@ -86,7 +86,7 @@ export async function getPatient(patientId: string): Promise<PatientDoc | null> 
   }
 }
 
-/** Yeni hasta ekle — Server: POST /patients/doctor/{doctorId} */
+/** Add new patient — Server: POST /patients/doctor/{doctorId} */
 export async function addPatient(
   doctorId: string,
   data: Omit<PatientDoc, "id" | "createdAt" | "updatedAt" | "doctorId">
@@ -105,7 +105,7 @@ export async function addPatient(
   return result.id;
 }
 
-/** Hasta güncelle — Server: PUT /patients/{patientId} */
+/** Update patient — Server: PUT /patients/{patientId} */
 export async function updatePatient(
   patientId: string,
   data: Partial<Omit<PatientDoc, "id" | "createdAt" | "doctorId">>
@@ -126,27 +126,27 @@ export async function updatePatient(
   await api.put(`/patients/${patientId}`, payload);
 }
 
-/** Hasta sil — Server: DELETE /patients/{patientId} */
+/** Delete patient — Server: DELETE /patients/{patientId} */
 export async function deletePatient(patientId: string): Promise<void> {
   await api.delete(`/patients/${patientId}`);
 }
 
 // ---------------------------------------------------------------------------
-// UYARI İŞLEMLERİ (server: /alerts/*)
+// ALERT OPERATIONS (server: /alerts/*)
 // ---------------------------------------------------------------------------
 
-/** Doktora ait tüm uyarıları getir — Server: GET /alerts/doctor/{doctorId} */
+/** Get all alerts of the doctor — Server: GET /alerts/doctor/{doctorId} */
 export async function getAlerts(doctorId: string): Promise<AlertDoc[]> {
   const data = await api.get<Record<string, unknown>[]>(`/alerts/doctor/${doctorId}`);
   return data.map(normalizeAlert);
 }
 
-/** Uyarıyı onayla — Server: PUT /alerts/{alertId}/acknowledge */
+/** Acknowledge alert — Server: PUT /alerts/{alertId}/acknowledge */
 export async function acknowledgeAlert(alertId: string): Promise<void> {
   await api.put(`/alerts/${alertId}/acknowledge`);
 }
 
-/** Yeni uyarı oluştur — Server: POST /alerts */
+/** Create new alert — Server: POST /alerts */
 export async function addAlert(
   doctorId: string,
   data: Omit<AlertDoc, "id" | "createdAt" | "doctorId">
@@ -203,7 +203,7 @@ function normalizePatient(raw: Record<string, unknown>): PatientDoc {
 // PIPELINE & ANALYSIS (server: /pipeline/*, /results/*)
 // ---------------------------------------------------------------------------
 
-/** Hasta analiz geçmişi — Server: GET /results/analysis/patient/{patientId} */
+/** Patient analysis history — Server: GET /results/analysis/patient/{patientId} */
 export async function getPatientAnalyses(
   patientId: string,
   hours: number = 24,
@@ -212,7 +212,7 @@ export async function getPatientAnalyses(
   return api.get(`/results/analysis/patient/${patientId}`, { hours, limit });
 }
 
-/** Hasta istatistikleri — Server: GET /results/analysis/patient/{patientId}/statistics */
+/** Patient statistics — Server: GET /results/analysis/patient/{patientId}/statistics */
 export async function getPatientStatistics(
   patientId: string,
   hours: number = 24
@@ -220,7 +220,7 @@ export async function getPatientStatistics(
   return api.get(`/results/analysis/patient/${patientId}/statistics`, { hours });
 }
 
-/** Hasta event'leri — Server: GET /results/events/patient/{patientId} */
+/** Patient events — Server: GET /results/events/patient/{patientId} */
 export async function getPatientEvents(
   patientId: string,
   period: string = "24h",
@@ -229,14 +229,14 @@ export async function getPatientEvents(
   return api.get(`/results/events/patient/${patientId}`, { period, severity });
 }
 
-/** Event detayı — Server: GET /results/events/{eventId} */
+/** Event detail — Server: GET /results/events/{eventId} */
 export async function getEventDetail(
   eventId: string
 ): Promise<{ event: EventRecord }> {
   return api.get(`/results/events/${eventId}`);
 }
 
-/** MedGemma raporu — Server: GET /results/reports/event/{eventId} */
+/** MedGemma report — Server: GET /results/reports/event/{eventId} */
 export async function getEventReport(
   eventId: string,
   version: string = "full"
@@ -244,7 +244,7 @@ export async function getEventReport(
   return api.get(`/results/reports/event/${eventId}`, { version });
 }
 
-/** Hasta raporları — Server: GET /results/reports/patient/{patientId} */
+/** Patient reports — Server: GET /results/reports/patient/{patientId} */
 export async function getPatientReports(
   patientId: string,
   limit: number = 20
@@ -252,14 +252,14 @@ export async function getPatientReports(
   return api.get(`/results/reports/patient/${patientId}`, { limit });
 }
 
-/** Hasta baseline — Server: GET /results/patient/{patientId}/baseline */
+/** Patient baseline — Server: GET /results/patient/{patientId}/baseline */
 export async function getPatientBaseline(
   patientId: string
 ): Promise<{ baseline: PatientBaseline | null }> {
   return api.get(`/results/patient/${patientId}/baseline`);
 }
 
-/** Hasta trend — Server: GET /results/patient/{patientId}/trend */
+/** Patient trend — Server: GET /results/patient/{patientId}/trend */
 export async function getPatientTrend(
   patientId: string,
   field: string = "anomaly_score"
@@ -267,7 +267,7 @@ export async function getPatientTrend(
   return api.get(`/results/patient/${patientId}/trend`, { field });
 }
 
-/** Hasta özet — Server: GET /results/summary/patient/{patientId} */
+/** Patient summary — Server: GET /results/summary/patient/{patientId} */
 export async function getPatientSummary(
   patientId: string
 ): Promise<PatientSummary> {

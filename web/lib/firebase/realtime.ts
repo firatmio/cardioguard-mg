@@ -1,8 +1,8 @@
 // =============================================================================
-// Real-time Firestore Hooks — onSnapshot ile canlı veri dinleme
+// Real-time Firestore Hooks — Live data listening via onSnapshot
 // =============================================================================
-// Hot reload: Firestore onSnapshot listener'ları sayesinde veri değiştiğinde
-// otomatik güncellenir. Sayfayı yenilemeye gerek yok.
+// Hot reload: Thanks to Firestore onSnapshot listeners, data updates
+// automatically when changed. No need to refresh the page.
 // =============================================================================
 
 "use client";
@@ -23,7 +23,7 @@ import { useAuth } from "./hooks";
 import type { PatientDoc, AlertDoc, DoctorStatsDoc, EmergencyAlertDoc } from "./types";
 
 // ---------------------------------------------------------------------------
-// Yardımcı: Firestore data → typed object
+// Helper: Firestore data → typed object
 // ---------------------------------------------------------------------------
 function toDate(val: unknown): Date | null {
   if (val instanceof Timestamp) return val.toDate();
@@ -81,7 +81,7 @@ function toAlert(id: string, d: Record<string, unknown>): AlertDoc {
 }
 
 // ---------------------------------------------------------------------------
-// usePatients — Doktorun tüm hastalarını real-time dinle
+// usePatients — Listen to all patients of the doctor in real-time
 // ---------------------------------------------------------------------------
 export function usePatients() {
   const { user } = useAuth();
@@ -113,7 +113,7 @@ export function usePatients() {
       },
       (err) => {
         console.error("[usePatients] Error:", err);
-        setError("Hasta verileri yüklenemedi.");
+        setError("Failed to load patient data.");
         setLoading(false);
       }
     );
@@ -125,7 +125,7 @@ export function usePatients() {
 }
 
 // ---------------------------------------------------------------------------
-// usePatient — Tek hasta belgesini real-time dinle (detay sayfası için)
+// usePatient — Listen to a single patient document in real-time (for detail page)
 // ---------------------------------------------------------------------------
 export function usePatient(patientId: string | null) {
   const [patient, setPatient] = useState<PatientDoc | null>(null);
@@ -155,7 +155,7 @@ export function usePatient(patientId: string | null) {
       },
       (err) => {
         console.error("[usePatient] Error:", err);
-        setError("Hasta verisi yüklenemedi.");
+        setError("Failed to load patient data.");
         setLoading(false);
       }
     );
@@ -167,7 +167,7 @@ export function usePatient(patientId: string | null) {
 }
 
 // ---------------------------------------------------------------------------
-// useAlerts — Doktorun tüm uyarılarını real-time dinle
+// useAlerts — Listen to all alerts of the doctor in real-time
 // ---------------------------------------------------------------------------
 export function useAlerts() {
   const { user } = useAuth();
@@ -199,7 +199,7 @@ export function useAlerts() {
       },
       (err) => {
         console.error("[useAlerts] Error:", err);
-        setError("Uyarı verileri yüklenemedi.");
+        setError("Failed to load alert data.");
         setLoading(false);
       }
     );
@@ -211,7 +211,7 @@ export function useAlerts() {
 }
 
 // ---------------------------------------------------------------------------
-// useDashboardStats — Hasta/uyarı verilerinden istatistik hesaplama
+// useDashboardStats — Calculate statistics from patient/alert data
 // ---------------------------------------------------------------------------
 export function useDashboardStats() {
   const { patients, loading: pLoading } = usePatients();
@@ -246,10 +246,10 @@ export function useDashboardStats() {
     updatedAt: new Date(),
   };
 
-  // Son 5 uyarı
+  // Last 5 alerts
   const recentAlerts = alerts.slice(0, 5);
 
-  // Aktif hastalar (recording olanlar önce)
+  // Active patients (recording ones first)
   const activePatients = [...patients]
     .sort((a, b) => {
       const order = { recording: 0, idle: 1, offline: 2 };
@@ -261,7 +261,7 @@ export function useDashboardStats() {
 }
 
 // ---------------------------------------------------------------------------
-// useEmergencyAlerts — Aktif acil durum uyarılarını real-time dinle
+// useEmergencyAlerts — Listen to active emergency alerts in real-time
 // ---------------------------------------------------------------------------
 function toEmergencyAlert(
   id: string,
@@ -316,7 +316,7 @@ export function useEmergencyAlerts() {
       },
       (err) => {
         console.error("[useEmergencyAlerts] Error:", err);
-        setError("Acil durum uyarıları yüklenemedi.");
+        setError("Failed to load emergency alerts.");
         setLoading(false);
       }
     );

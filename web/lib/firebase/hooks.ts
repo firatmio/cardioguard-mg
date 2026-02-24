@@ -11,10 +11,10 @@ interface AuthState {
 }
 
 /**
- * Firebase Auth durum hook'u.
- * onAuthStateChanged ile kullanıcı oturumunu dinler.
- * Oturum algılandığında profili "doctor" rolüyle senkronize eder ve
- * sync tamamlanana kadar loading = true tutar.
+ * Firebase Auth state hook.
+ * Listens to user session via onAuthStateChanged.
+ * When a session is detected, syncs the profile with the "doctor" role
+ * and keeps loading = true until sync is complete.
  */
 export function useAuth(): AuthState {
   const [state, setState] = useState<AuthState>({
@@ -27,7 +27,7 @@ export function useAuth(): AuthState {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user && syncedUid.current !== user.uid) {
         syncedUid.current = user.uid;
-        // Profili "doctor" olarak senkronize et — tamamlanana kadar loading kalır
+        // Sync profile as "doctor" — stays loading until complete
         try {
           await api.post("/users/profile", {
             email: user.email || "",

@@ -401,7 +401,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ─── Son 24 Saat Analiz Özeti ─── */}
+      {/* ─── Last 24 Hours Analysis Summary ─── */}
       <div className={styles.section24h}>
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitleRow}>
@@ -524,7 +524,7 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* ─── Hasta Bazlı 24h Breakdown ─── */}
+      {/* ─── Per-Patient 24h Breakdown ─── */}
       {agg.patientBreakdown.length > 0 && (
         <div className={styles.card}>
           <div className={styles.cardHeader}>

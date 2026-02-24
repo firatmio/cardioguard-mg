@@ -1,8 +1,8 @@
 // =============================================================================
-// API Client — Sunucu ile iletişim katmanı
+// API Client — Server communication layer
 // =============================================================================
-// Tüm CRUD işlemleri bu client üzerinden server'a yönlendirilir.
-// Firebase Auth token'ı otomatik olarak eklenir.
+// All CRUD operations are routed to the server through this client.
+// Firebase Auth token is automatically attached.
 // =============================================================================
 
 import { auth } from "./firebase/config";
@@ -11,17 +11,17 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1";
 
 // ---------------------------------------------------------------------------
-// Token yardımcısı
+// Token helper
 // ---------------------------------------------------------------------------
 
 async function getAuthToken(): Promise<string> {
   const user = auth.currentUser;
-  if (!user) throw new Error("Kullanıcı oturum açmamış.");
+  if (!user) throw new Error("User is not signed in.");
   return user.getIdToken();
 }
 
 // ---------------------------------------------------------------------------
-// HTTP yardımcıları
+// HTTP helpers
 // ---------------------------------------------------------------------------
 
 interface RequestOptions {
@@ -46,7 +46,7 @@ async function apiRequest<T = unknown>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  // Query string oluştur
+  // Build query string
   let url = `${API_BASE_URL}${path}`;
   if (params) {
     const qs = new URLSearchParams();
@@ -89,7 +89,7 @@ export const api = {
   delete: <T = unknown>(path: string) =>
     apiRequest<T>(path, { method: "DELETE" }),
 
-  /** Auth gerektirmeyen istekler için */
+  /** For requests that don't require auth */
   public: {
     get: <T = unknown>(path: string, params?: RequestOptions["params"]) =>
       apiRequest<T>(path, { auth: false, params }),

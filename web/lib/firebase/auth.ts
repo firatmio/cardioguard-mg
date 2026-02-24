@@ -11,9 +11,9 @@ import api from "../api";
 const googleProvider = new GoogleAuthProvider();
 
 /**
- * Kullanıcının rolünü sunucu üzerinden kontrol eder.
- * Rol "patient" ise özel hata fırlatır ve oturumu kapatır.
- * Geçerli bir doktor/admin ise profili oluşturur veya günceller.
+ * Checks user role via the server.
+ * If role is "patient", throws a custom error and signs out.
+ * If it's a valid doctor/admin, creates or updates the profile.
  */
 async function checkDoctorRole(credential: UserCredential): Promise<UserCredential> {
   const uid = credential.user.uid;
@@ -23,7 +23,7 @@ async function checkDoctorRole(credential: UserCredential): Promise<UserCredenti
     );
     if (data.exists && data.role === "patient") {
       await firebaseSignOut(auth);
-      const err = new Error("Bu panel yalnızca doktorlar içindir.");
+      const err = new Error("This panel is only for doctors.");
       (err as any).code = "auth/patient-role";
       throw err;
     }
@@ -32,8 +32,8 @@ async function checkDoctorRole(credential: UserCredential): Promise<UserCredenti
     console.warn("[Auth] Role check failed:", err?.message);
   }
 
-  // Profili "doctor" rolüyle oluştur / güncelle — böylece
-  // get_current_user middleware'i doğru rolü okur.
+  // Create / update profile with "doctor" role — so that
+  // get_current_user middleware reads the correct role.
   try {
     await api.post("/users/profile", {
       email: credential.user.email || "",
@@ -47,7 +47,7 @@ async function checkDoctorRole(credential: UserCredential): Promise<UserCredenti
   return credential;
 }
 
-/** Email + şifre ile giriş */
+/** Sign in with email + password */
 export async function signInWithEmail(
   email: string,
   password: string
@@ -56,13 +56,13 @@ export async function signInWithEmail(
   return checkDoctorRole(credential);
 }
 
-/** Google popup ile giriş */
+/** Sign in with Google popup */
 export async function signInWithGoogle(): Promise<UserCredential> {
   const credential = await signInWithPopup(auth, googleProvider);
   return checkDoctorRole(credential);
 }
 
-/** Çıkış */
+/** Sign out */
 export async function signOut(): Promise<void> {
   return firebaseSignOut(auth);
 }

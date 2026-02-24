@@ -1,8 +1,8 @@
 // =============================================================================
-// Firestore Types — Tüm Firestore koleksiyonları için tip tanımları
+// Firestore Types — Type definitions for all Firestore collections
 // =============================================================================
 
-/** Mobil uygulamadan kayıt olan kullanıcı (`users/{uid}`) */
+/** User registered from mobile app (`users/{uid}`) */
 export interface RegisteredUserDoc {
   uid: string;
   email: string;
@@ -26,7 +26,7 @@ export interface RegisteredUserDoc {
 
 export interface PatientDoc {
   id?: string; // Firestore doc ID
-  userId?: string; // Kayıtlı kullanıcının Firebase Auth UID'si
+  userId?: string; // Firebase Auth UID of the registered user
   name: string;
   age: number;
   gender: "M" | "F";
@@ -42,7 +42,7 @@ export interface PatientDoc {
   createdAt: Date;
   updatedAt: Date;
   doctorId: string; // Firebase Auth UID of the doctor
-  doctorName?: string; // Doktorun adı (mobil uygulamada görüntüleme için)
+  doctorName?: string; // Doctor's name (for display in mobile app)
 
   // BLE / ECG live monitoring fields (updated by mobile app)
   lastBPM?: number | null;

@@ -31,10 +31,10 @@ import {
 import type { PatientDoc, RegisteredUserDoc } from "@/lib/firebase/types";
 import styles from "./page.module.css";
 
-// Detay sayfasına yönlendirme için router
+// Router for redirecting to detail page
 
 // ---------------------------------------------------------------------------
-// Düzenleme formu (mevcut hasta düzenleme için)
+// Edit form (for editing existing patients)
 // ---------------------------------------------------------------------------
 const emptyEditForm = {
   name: "",
@@ -59,7 +59,7 @@ export default function PatientsPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  // ===== Hasta Ekleme (Arama) Modal =====
+  // ===== Add Patient (Search) Modal =====
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [userSearch, setUserSearch] = useState("");
   const [searchResults, setSearchResults] = useState<RegisteredUserDoc[]>([]);
@@ -72,17 +72,17 @@ export default function PatientsPage() {
   const [addNotes, setAddNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // ===== Düzenleme Modal =====
+  // ===== Edit Modal =====
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<EditFormData>(emptyEditForm);
   const [editSaving, setEditSaving] = useState(false);
 
-  // ===== Silme =====
+  // ===== Delete =====
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  // ----- Filtreleme -----
+  // ----- Filtering -----
   const filtered = patients.filter((p) => {
     const s = search.toLowerCase();
     const matchSearch =
@@ -110,13 +110,13 @@ export default function PatientsPage() {
     ).length,
   };
 
-  // ----- Kayıtlı kullanıcı arama -----
+  // ----- Registered user search -----
   const handleUserSearch = useCallback(async () => {
     if (!userSearch.trim()) return;
     setSearching(true);
     setSearchDone(false);
     try {
-      // Zaten eklenmiş hastaların userId'lerini çıkar
+      // Exclude userIds of already added patients
       const existingUserIds = patients
         .map((p) => p.userId)
         .filter(Boolean) as string[];
@@ -134,7 +134,7 @@ export default function PatientsPage() {
     }
   }, [userSearch, patients]);
 
-  // ----- Hasta ekleme modal -----
+  // ----- Add patient modal -----
   const openAddModal = () => {
     setUserSearch("");
     setSearchResults([]);
@@ -167,7 +167,7 @@ export default function PatientsPage() {
     }
   };
 
-  // ----- Düzenleme modal -----
+  // ----- Edit modal -----
   const openEditModal = (patient: PatientDoc) => {
     setEditingId(patient.id ?? null);
     setEditForm({
@@ -216,7 +216,7 @@ export default function PatientsPage() {
     }
   };
 
-  // ----- Sil -----
+  // ----- Delete -----
   const handleDelete = async (id: string) => {
     setDeleting(true);
     try {
@@ -229,7 +229,7 @@ export default function PatientsPage() {
     }
   };
 
-  // ----- Zaman formatlama -----
+  // ----- Time formatting -----
   const formatTime = (date: Date | null) => {
     if (!date) return "—";
     const now = new Date();
@@ -242,7 +242,7 @@ export default function PatientsPage() {
     return `${Math.floor(diffH / 24)}d ago`;
   };
 
-  // ----- Tarih formatlama -----
+  // ----- Date formatting -----
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "";
     const d = new Date(dateStr);
@@ -476,7 +476,7 @@ export default function PatientsPage() {
         </>
       )}
 
-      {/* ===== Hasta Ekleme Modal — Kayıtlı Kullanıcı Arama ===== */}
+      {/* ===== Add Patient Modal — Registered User Search ===== */}
       {addModalOpen && (
         <div className={styles.modalOverlay} onClick={closeAddModal}>
           <div
@@ -493,7 +493,7 @@ export default function PatientsPage() {
             </div>
 
             <div className={styles.modalBody}>
-              {/* Seçili kullanıcı yokken — Arama arayüzü */}
+              {/* When no user is selected — Search interface */}
               {!selectedUser ? (
                 <>
                   <p className={styles.searchHint}>
@@ -527,7 +527,7 @@ export default function PatientsPage() {
                     </button>
                   </div>
 
-                  {/* Arama Sonuçları */}
+                  {/* Search Results */}
                   {searching && (
                     <div className={styles.searchLoading}>
                       <Loader2 size={18} className={styles.spin} />
@@ -601,7 +601,7 @@ export default function PatientsPage() {
                   )}
                 </>
               ) : (
-                /* Kullanıcı seçildikten sonra — Ek bilgi formu */
+                /* After user is selected — Additional info form */
                 <>
                   <div className={styles.selectedUserCard}>
                     <div className={styles.selectedAvatar}>
@@ -679,7 +679,7 @@ export default function PatientsPage() {
         </div>
       )}
 
-      {/* ===== Hasta Düzenleme Modal ===== */}
+      {/* ===== Patient Edit Modal ===== */}
       {editModalOpen && (
         <div className={styles.modalOverlay} onClick={closeEditModal}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -771,7 +771,7 @@ export default function PatientsPage() {
                       onChange={(e) =>
                         setEditForm({ ...editForm, email: e.target.value })
                       }
-                      placeholder="hasta@email.com"
+                      placeholder="patient@email.com"
                     />
                   </div>
                   <div className={styles.formGroup}>
@@ -824,7 +824,7 @@ export default function PatientsPage() {
         </div>
       )}
 
-      {/* ===== Silme Onay Dialog ===== */}
+      {/* ===== Delete Confirmation Dialog ===== */}
       {deleteConfirm && (
         <div
           className={styles.modalOverlay}

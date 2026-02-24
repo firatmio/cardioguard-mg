@@ -23,13 +23,13 @@ import { useAuth, type PatientOnboardingData } from '../../context/AuthContext';
 import { colors, spacing, fontSize, fontWeight, borderRadius, shadows } from '../../constants/theme';
 
 const relationOptions = [
-  'Eş',
-  'Anne',
-  'Baba',
-  'Kardeş',
-  'Çocuk',
-  'Arkadaş',
-  'Diğer',
+  'Spouse',
+  'Mother',
+  'Father',
+  'Sibling',
+  'Child',
+  'Friend',
+  'Other',
 ];
 
 export default function EmergencyContactScreen({ navigation, route }: any) {
@@ -45,7 +45,7 @@ export default function EmergencyContactScreen({ navigation, route }: any) {
 
   const handleComplete = async () => {
     if (!contactName.trim() || !contactPhone.trim()) {
-      setError('Acil durum kişisi adı ve telefonu zorunludur.');
+      setError('Emergency contact name and phone are required.');
       return;
     }
 
@@ -57,13 +57,13 @@ export default function EmergencyContactScreen({ navigation, route }: any) {
         ...prevData,
         emergencyContactName: contactName.trim(),
         emergencyContactPhone: contactPhone.trim(),
-        emergencyContactRelation: contactRelation || 'Belirtilmedi',
+        emergencyContactRelation: contactRelation || 'Not specified',
       };
 
       await setOnboardingComplete(fullData);
       // Navigation will automatically switch to MainTabs
     } catch (err) {
-      setError('Kayıt sırasında hata oluştu. Lütfen tekrar deneyin.');
+      setError('An error occurred during registration. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -90,17 +90,17 @@ export default function EmergencyContactScreen({ navigation, route }: any) {
             <View style={[styles.progressLine, styles.progressLineDone]} />
             <View style={[styles.progressDot, styles.progressActive]} />
           </View>
-          <Text style={styles.stepLabel}>Adım 4 / 4</Text>
+          <Text style={styles.stepLabel}>Step 4 / 4</Text>
 
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.iconContainer}>
               <Phone size={22} color="#fff" />
             </View>
-            <Text style={styles.title}>Acil Durum İletişim</Text>
+            <Text style={styles.title}>Emergency Contact</Text>
             <Text style={styles.subtitle}>
-              Acil bir durumda ulaşılacak kişiyi belirleyin.
-              Bu kişi bilgilendirilecektir.
+              Specify a person to be reached in case of emergency.
+              This person will be notified.
             </Text>
           </View>
 
@@ -113,11 +113,11 @@ export default function EmergencyContactScreen({ navigation, route }: any) {
           {/* Form */}
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>İletişim Kişisi Adı *</Text>
+              <Text style={styles.label}>Contact Name *</Text>
               <View style={styles.inputWrapper}>
                 <TextInput
                   style={styles.input}
-                  placeholder="Kişinin adı soyadı"
+                  placeholder="Contact's full name"
                   placeholderTextColor={colors.textTertiary}
                   value={contactName}
                   onChangeText={setContactName}
@@ -127,7 +127,7 @@ export default function EmergencyContactScreen({ navigation, route }: any) {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Telefon Numarası *</Text>
+              <Text style={styles.label}>Phone Number *</Text>
               <View style={styles.inputWrapper}>
                 <TextInput
                   style={styles.input}
@@ -141,7 +141,7 @@ export default function EmergencyContactScreen({ navigation, route }: any) {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Yakınlık Derecesi</Text>
+              <Text style={styles.label}>Relationship</Text>
               <View style={styles.relationGrid}>
                 {relationOptions.map((rel) => (
                   <TouchableOpacity
@@ -170,9 +170,9 @@ export default function EmergencyContactScreen({ navigation, route }: any) {
           <View style={styles.summaryCard}>
             <CheckCircle size={20} color={colors.success} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.summaryTitle}>Neredeyse Hazır!</Text>
+              <Text style={styles.summaryTitle}>Almost Ready!</Text>
               <Text style={styles.summaryText}>
-                Tüm bilgileriniz güvenli bir şekilde saklanacak ve sadece doktorunuz tarafından görüntülenebilecektir.
+                All your information will be stored securely and will only be viewable by your doctor.
               </Text>
             </View>
           </View>
@@ -185,7 +185,7 @@ export default function EmergencyContactScreen({ navigation, route }: any) {
             onPress={() => navigation.goBack()}
           >
             <ArrowLeft size={18} color={colors.textPrimary} />
-            <Text style={styles.backBtnText}>Geri</Text>
+            <Text style={styles.backBtnText}>Back</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.completeButton, saving && styles.buttonDisabled]}
@@ -198,7 +198,7 @@ export default function EmergencyContactScreen({ navigation, route }: any) {
             ) : (
               <>
                 <CheckCircle size={18} color="#fff" />
-                <Text style={styles.completeButtonText}>Tamamla</Text>
+                <Text style={styles.completeButtonText}>Complete</Text>
               </>
             )}
           </TouchableOpacity>

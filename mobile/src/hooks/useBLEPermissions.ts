@@ -138,13 +138,13 @@ export function useBLEPermissions(): UseBLEPermissionsReturn {
 
         // Guide user to app settings
         Alert.alert(
-          'Bluetooth İzni Gerekli',
-          'CardioGuard, EKG cihazınızla iletişim kurmak için Bluetooth iznine ihtiyaç duyar. ' +
-          'Lütfen Ayarlar\'dan Bluetooth iznini etkinleştirin.',
+          'Bluetooth Permission Required',
+          'CardioGuard needs Bluetooth permission to communicate with your ECG device. ' +
+          'Please enable Bluetooth permission in Settings.',
           [
-            { text: 'İptal', style: 'cancel' },
+            { text: 'Cancel', style: 'cancel' },
             {
-              text: 'Ayarları Aç',
+              text: 'Open Settings',
               onPress: () => Linking.openSettings(),
             },
           ]

@@ -235,11 +235,11 @@ export default function PatientsPage() {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMin = Math.floor(diffMs / 60000);
-    if (diffMin < 1) return "Şimdi";
-    if (diffMin < 60) return `${diffMin} dk önce`;
+    if (diffMin < 1) return "Now";
+    if (diffMin < 60) return `${diffMin}m ago`;
     const diffH = Math.floor(diffMin / 60);
-    if (diffH < 24) return `${diffH} sa önce`;
-    return `${Math.floor(diffH / 24)} gün önce`;
+    if (diffH < 24) return `${diffH}h ago`;
+    return `${Math.floor(diffH / 24)}d ago`;
   };
 
   // ----- Tarih formatlama -----
@@ -247,7 +247,7 @@ export default function PatientsPage() {
     if (!dateStr) return "";
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
-    return d.toLocaleDateString("tr-TR", {
+    return d.toLocaleDateString("en-US", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -258,14 +258,14 @@ export default function PatientsPage() {
     <div className={styles.page}>
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.pageTitle}>Hasta Yönetimi</h1>
+          <h1 className={styles.pageTitle}>Patient Management</h1>
           <p className={styles.pageDesc}>
-            Tüm hastalarınızı görüntüleyin ve takip edin.
+            View and monitor all your patients.
           </p>
         </div>
         <button className={styles.addBtn} onClick={openAddModal}>
           <UserPlus size={16} />
-          Hasta Ekle
+          Add Patient
         </button>
       </div>
 
@@ -279,12 +279,12 @@ export default function PatientsPage() {
               onClick={() => setStatusFilter(tab)}
             >
               {tab === "all"
-                ? "Tümü"
+                ? "All"
                 : tab === "recording"
-                  ? "Aktif"
+                  ? "Active"
                   : tab === "idle"
-                    ? "Beklemede"
-                    : "Çevrimdışı"}
+                    ? "Idle"
+                    : "Offline"}
               <span className={styles.tabCount}>{counts[tab]}</span>
             </button>
           ))}
@@ -294,7 +294,7 @@ export default function PatientsPage() {
           <Search size={15} className={styles.searchIcon} />
           <input
             type="text"
-            placeholder="Hasta ara..."
+            placeholder="Search patients..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className={styles.searchInput}
@@ -306,7 +306,7 @@ export default function PatientsPage() {
       {loading ? (
         <div className={styles.loadingState}>
           <Loader2 size={24} className={styles.spin} />
-          <p>Hastalar yükleniyor...</p>
+          <p>Loading patients...</p>
         </div>
       ) : (
         <>
@@ -315,14 +315,14 @@ export default function PatientsPage() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Hasta</th>
-                  <th>Tanı</th>
-                  <th>Durum</th>
+                  <th>Patient</th>
+                  <th>Diagnosis</th>
+                  <th>Status</th>
                   <th>BPM</th>
-                  <th>Sinyal</th>
-                  <th>Son Sync</th>
-                  <th>Uyarılar (24s)</th>
-                  <th>İşlemler</th>
+                  <th>Signal</th>
+                  <th>Last Sync</th>
+                  <th>Alerts (24h)</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -342,8 +342,8 @@ export default function PatientsPage() {
                             {patient.name}
                           </div>
                           <div className={styles.patientMeta}>
-                            {patient.age} yaş ·{" "}
-                            {patient.gender === "M" ? "Erkek" : "Kadın"}
+                            {patient.age} y/o ·{" "}
+                            {patient.gender === "M" ? "Male" : "Female"}
                           </div>
                         </div>
                       </div>
@@ -358,24 +358,24 @@ export default function PatientsPage() {
                         className={`${styles.statusBadge} ${styles[`status_${patient.deviceStatus === "recording" ? "recording" : patient.deviceStatus === "connected" ? "idle" : patient.status}`]}`}
                       >
                         {patient.deviceStatus === "recording" ? (
-                          <>
-                            <Wifi size={10} /> Canlı Kayıt
+                          <>  
+                            <Wifi size={10} /> Live Recording
                           </>
                         ) : patient.deviceStatus === "connected" ? (
                           <>
-                            <Activity size={10} /> Bağlı
+                            <Activity size={10} /> Connected
                           </>
                         ) : patient.status === "recording" ? (
                           <>
-                            <Wifi size={10} /> Kayıt
+                            <Wifi size={10} /> Recording
                           </>
                         ) : patient.status === "idle" ? (
                           <>
-                            <Activity size={10} /> Beklemede
+                            <Activity size={10} /> Idle
                           </>
                         ) : (
                           <>
-                            <WifiOff size={10} /> Çevrimdışı
+                            <WifiOff size={10} /> Offline
                           </>
                         )}
                       </span>
@@ -386,7 +386,7 @@ export default function PatientsPage() {
                           <Heart size={12} color={patient.lastBPM ? "#ef4444" : undefined} />
                           {" "}{patient.lastBPM ?? patient.bpm}
                           {patient.lastBPM && (
-                            <span className={styles.liveDot} title="Canlı veri" />
+                            <span className={styles.liveDot} title="Live data" />
                           )}
                         </span>
                       ) : (
@@ -430,21 +430,21 @@ export default function PatientsPage() {
                       <div className={styles.actions}>
                         <button
                           className={`${styles.actionBtn} ${styles.actionPrimary}`}
-                          title="Detay"
+                          title="Details"
                           onClick={() => router.push(`/dashboard/patients/${patient.id}`)}
                         >
                           <Eye size={14} />
                         </button>
                         <button
                           className={styles.actionBtn}
-                          title="Düzenle"
+                          title="Edit"
                           onClick={() => openEditModal(patient)}
                         >
                           <Pencil size={14} />
                         </button>
                         <button
                           className={`${styles.actionBtn} ${styles.actionDanger}`}
-                          title="Sil"
+                          title="Delete"
                           onClick={() => setDeleteConfirm(patient.id ?? null)}
                         >
                           <Trash2 size={14} />
@@ -461,13 +461,13 @@ export default function PatientsPage() {
                 <Filter size={24} />
                 <p>
                   {patients.length === 0
-                    ? "Henüz hasta eklenmemiş. İlk hastanızı ekleyin."
-                    : "Aramanızla eşleşen hasta bulunamadı."}
+                    ? "No patients added yet. Add your first patient."
+                    : "No patients matching your search."}
                 </p>
                 {patients.length === 0 && (
                   <button className={styles.addBtnSmall} onClick={openAddModal}>
                     <UserPlus size={14} />
-                    Hasta Ekle
+                    Add Patient
                   </button>
                 )}
               </div>
@@ -485,7 +485,7 @@ export default function PatientsPage() {
           >
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>
-                {selectedUser ? "Hasta Bilgilerini Tamamla" : "Kayıtlı Hasta Ara"}
+                {selectedUser ? "Complete Patient Information" : "Search Registered Patients"}
               </h2>
               <button className={styles.modalClose} onClick={closeAddModal}>
                 <X size={18} />
@@ -497,8 +497,8 @@ export default function PatientsPage() {
               {!selectedUser ? (
                 <>
                   <p className={styles.searchHint}>
-                    Sistemde hasta olarak kayıtlı kişileri isim veya e-posta ile
-                    arayarak listenize ekleyebilirsiniz.
+                    Search for registered patients by name or email to add them
+                    to your list.
                   </p>
 
                   <div className={styles.userSearchBox}>
@@ -507,7 +507,7 @@ export default function PatientsPage() {
                       <input
                         type="text"
                         className={styles.userSearchInput}
-                        placeholder="İsim veya e-posta ile arayın..."
+                        placeholder="Search by name or email..."
                         value={userSearch}
                         onChange={(e) => setUserSearch(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleUserSearch()}
@@ -522,7 +522,7 @@ export default function PatientsPage() {
                       {searching ? (
                         <Loader2 size={16} className={styles.spin} />
                       ) : (
-                        "Ara"
+                        "Search"
                       )}
                     </button>
                   </div>
@@ -531,7 +531,7 @@ export default function PatientsPage() {
                   {searching && (
                     <div className={styles.searchLoading}>
                       <Loader2 size={18} className={styles.spin} />
-                      <span>Aranıyor...</span>
+                      <span>Searching...</span>
                     </div>
                   )}
 
@@ -539,11 +539,11 @@ export default function PatientsPage() {
                     <div className={styles.searchEmpty}>
                       <User size={20} />
                       <p>
-                        &ldquo;{userSearch}&rdquo; ile eşleşen kayıtlı hasta
-                        bulunamadı.
+                        &ldquo;{userSearch}&rdquo; — no registered patients
+                        found.
                       </p>
                       <span className={styles.searchEmptyHint}>
-                        Hastanın mobil uygulamadan kayıt olması gerekiyor.
+                        The patient needs to register via the mobile app.
                       </span>
                     </div>
                   )}
@@ -551,7 +551,7 @@ export default function PatientsPage() {
                   {!searching && searchResults.length > 0 && (
                     <div className={styles.searchResults}>
                       <div className={styles.resultCount}>
-                        {searchResults.length} sonuç bulundu
+                        {searchResults.length} results found
                       </div>
                       {searchResults.map((u) => (
                         <button
@@ -564,7 +564,7 @@ export default function PatientsPage() {
                           </div>
                           <div className={styles.resultInfo}>
                             <div className={styles.resultName}>
-                              {u.displayName || `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim() || "İsimsiz"}
+                              {u.displayName || `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim() || "Unnamed"}
                             </div>
                             <div className={styles.resultMeta}>
                               <span>
@@ -579,16 +579,16 @@ export default function PatientsPage() {
                               {u.gender && (
                                 <span>
                                   {u.gender === "male"
-                                    ? "Erkek"
+                                    ? "Male"
                                     : u.gender === "female"
-                                      ? "Kadın"
-                                      : "Diğer"}
+                                      ? "Female"
+                                      : "Other"}
                                 </span>
                               )}
                             </div>
                             {u.onboardingComplete && (
                               <span className={styles.resultBadge}>
-                                <UserCheck size={11} /> Onboarding Tamamlandı
+                                <UserCheck size={11} /> Onboarding Complete
                               </span>
                             )}
                           </div>
@@ -616,34 +616,34 @@ export default function PatientsPage() {
                         {selectedUser.dateOfBirth &&
                           ` · ${formatDate(selectedUser.dateOfBirth)}`}
                         {selectedUser.gender &&
-                          ` · ${selectedUser.gender === "male" ? "Erkek" : selectedUser.gender === "female" ? "Kadın" : "Diğer"}`}
+                          ` · ${selectedUser.gender === "male" ? "Male" : selectedUser.gender === "female" ? "Female" : "Other"}`}
                       </div>
                     </div>
                     <button
                       className={styles.changeUserBtn}
                       onClick={() => setSelectedUser(null)}
                     >
-                      Değiştir
+                      Change
                     </button>
                   </div>
 
                   <div className={styles.formGrid}>
                     <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>Tanı</label>
+                      <label className={styles.formLabel}>Diagnosis</label>
                       <input
                         className={styles.formInput}
                         value={addDiagnosis}
                         onChange={(e) => setAddDiagnosis(e.target.value)}
-                        placeholder="Örn: Atriyal Fibrilasyon"
+                        placeholder="e.g. Atrial Fibrillation"
                       />
                     </div>
                     <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>Notlar</label>
+                      <label className={styles.formLabel}>Notes</label>
                       <textarea
                         className={styles.formTextarea}
                         value={addNotes}
                         onChange={(e) => setAddNotes(e.target.value)}
-                        placeholder="Doktor notları..."
+                        placeholder="Doctor notes..."
                         rows={3}
                       />
                     </div>
@@ -655,7 +655,7 @@ export default function PatientsPage() {
             {selectedUser && (
               <div className={styles.modalFooter}>
                 <button className={styles.cancelBtn} onClick={closeAddModal}>
-                  İptal
+                  Cancel
                 </button>
                 <button
                   className={styles.saveBtn}
@@ -665,11 +665,11 @@ export default function PatientsPage() {
                   {saving ? (
                     <>
                       <Loader2 size={14} className={styles.spin} />{" "}
-                      Ekleniyor...
+                      Adding...
                     </>
                   ) : (
                     <>
-                      <UserPlus size={14} /> Hastayı Ekle
+                      <UserPlus size={14} /> Add Patient
                     </>
                   )}
                 </button>
@@ -684,7 +684,7 @@ export default function PatientsPage() {
         <div className={styles.modalOverlay} onClick={closeEditModal}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <h2 className={styles.modalTitle}>Hasta Düzenle</h2>
+              <h2 className={styles.modalTitle}>Edit Patient</h2>
               <button className={styles.modalClose} onClick={closeEditModal}>
                 <X size={18} />
               </button>
@@ -693,19 +693,19 @@ export default function PatientsPage() {
             <div className={styles.modalBody}>
               <div className={styles.formGrid}>
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Ad Soyad *</label>
+                  <label className={styles.formLabel}>Full Name *</label>
                   <input
                     className={styles.formInput}
                     value={editForm.name}
                     onChange={(e) =>
                       setEditForm({ ...editForm, name: e.target.value })
                     }
-                    placeholder="Hasta adı soyadı"
+                    placeholder="Patient full name"
                   />
                 </div>
                 <div className={styles.formRow2}>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Yaş *</label>
+                    <label className={styles.formLabel}>Age *</label>
                     <input
                       className={styles.formInput}
                       type="number"
@@ -717,7 +717,7 @@ export default function PatientsPage() {
                     />
                   </div>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Cinsiyet</label>
+                    <label className={styles.formLabel}>Gender</label>
                     <select
                       className={styles.formSelect}
                       value={editForm.gender}
@@ -728,24 +728,24 @@ export default function PatientsPage() {
                         })
                       }
                     >
-                      <option value="M">Erkek</option>
-                      <option value="F">Kadın</option>
+                      <option value="M">Male</option>
+                      <option value="F">Female</option>
                     </select>
                   </div>
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Tanı</label>
+                  <label className={styles.formLabel}>Diagnosis</label>
                   <input
                     className={styles.formInput}
                     value={editForm.diagnosis}
                     onChange={(e) =>
                       setEditForm({ ...editForm, diagnosis: e.target.value })
                     }
-                    placeholder="Örn: Atriyal Fibrilasyon"
+                    placeholder="e.g. Atrial Fibrillation"
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Durum</label>
+                  <label className={styles.formLabel}>Status</label>
                   <select
                     className={styles.formSelect}
                     value={editForm.status}
@@ -756,14 +756,14 @@ export default function PatientsPage() {
                       })
                     }
                   >
-                    <option value="idle">Beklemede</option>
-                    <option value="recording">Kayıt (Aktif)</option>
-                    <option value="offline">Çevrimdışı</option>
+                    <option value="idle">Idle</option>
+                    <option value="recording">Recording (Active)</option>
+                    <option value="offline">Offline</option>
                   </select>
                 </div>
                 <div className={styles.formRow2}>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>E-posta</label>
+                    <label className={styles.formLabel}>Email</label>
                     <input
                       className={styles.formInput}
                       type="email"
@@ -775,7 +775,7 @@ export default function PatientsPage() {
                     />
                   </div>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Telefon</label>
+                    <label className={styles.formLabel}>Phone</label>
                     <input
                       className={styles.formInput}
                       value={editForm.phone}
@@ -787,14 +787,14 @@ export default function PatientsPage() {
                   </div>
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Notlar</label>
+                  <label className={styles.formLabel}>Notes</label>
                   <textarea
                     className={styles.formTextarea}
                     value={editForm.notes}
                     onChange={(e) =>
                       setEditForm({ ...editForm, notes: e.target.value })
                     }
-                    placeholder="Doktor notları..."
+                    placeholder="Doctor notes..."
                     rows={3}
                   />
                 </div>
@@ -803,7 +803,7 @@ export default function PatientsPage() {
 
             <div className={styles.modalFooter}>
               <button className={styles.cancelBtn} onClick={closeEditModal}>
-                İptal
+                Cancel
               </button>
               <button
                 className={styles.saveBtn}
@@ -813,10 +813,10 @@ export default function PatientsPage() {
                 {editSaving ? (
                   <>
                     <Loader2 size={14} className={styles.spin} />{" "}
-                    Kaydediliyor...
+                    Saving...
                   </>
                 ) : (
-                  "Güncelle"
+                  "Update"
                 )}
               </button>
             </div>
@@ -837,17 +837,17 @@ export default function PatientsPage() {
             <div className={styles.confirmIcon}>
               <Trash2 size={24} />
             </div>
-            <h3 className={styles.confirmTitle}>Hastayı Sil</h3>
+            <h3 className={styles.confirmTitle}>Delete Patient</h3>
             <p className={styles.confirmDesc}>
-              Bu hastayı ve tüm ilişkili uyarıları kalıcı olarak silmek
-              istediğinize emin misiniz? Bu işlem geri alınamaz.
+              Are you sure you want to permanently delete this patient and all
+              associated alerts? This action cannot be undone.
             </p>
             <div className={styles.confirmActions}>
               <button
                 className={styles.cancelBtn}
                 onClick={() => setDeleteConfirm(null)}
               >
-                İptal
+                Cancel
               </button>
               <button
                 className={styles.deleteBtn}
@@ -856,10 +856,10 @@ export default function PatientsPage() {
               >
                 {deleting ? (
                   <>
-                    <Loader2 size={14} className={styles.spin} /> Siliniyor...
+                    <Loader2 size={14} className={styles.spin} /> Deleting...
                   </>
                 ) : (
-                  "Evet, Sil"
+                  "Yes, Delete"
                 )}
               </button>
             </div>

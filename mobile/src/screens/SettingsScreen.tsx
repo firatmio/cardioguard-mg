@@ -124,28 +124,28 @@ export default function SettingsScreen() {
         <Text style={styles.title}>Settings</Text>
 
         {/* Profile section */}
-        <Text style={styles.sectionTitle}>PROFİL</Text>
+        <Text style={styles.sectionTitle}>PROFILE</Text>
         <View style={[styles.card, shadows.sm]}>
           <SettingRow
-            label="Ad Soyad"
+            label="Full Name"
             value={
               patientData
                 ? `${patientData.firstName} ${patientData.lastName}`
-                : profile?.displayName ?? 'Belirtilmedi'
+                : profile?.displayName ?? 'Not specified'
             }
           />
           <SettingRow
-            label="E-posta"
+            label="Email"
             value={user?.email ?? '--'}
           />
           <SettingRow
-            label="Hasta ID"
+            label="Patient ID"
             value={profile?.id ?? user?.uid?.slice(0, 8) ?? '--'}
           />
         </View>
 
         {/* Doctor section */}
-        <Text style={styles.sectionTitle}>DOKTOR BİLGİSİ</Text>
+        <Text style={styles.sectionTitle}>DOCTOR INFO</Text>
         <View style={[styles.card, shadows.sm]}>
           {profile?.doctorId ? (
             <>
@@ -161,23 +161,23 @@ export default function SettingsScreen() {
                   )}
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.doctorName}>{profile.doctorName || 'Doktorunuz'}</Text>
-                  <Text style={styles.doctorSub}>Kayıtlı Doktor</Text>
+                  <Text style={styles.doctorName}>{profile.doctorName || 'Your Doctor'}</Text>
+                  <Text style={styles.doctorSub}>Registered Doctor</Text>
                 </View>
               </View>
             </>
           ) : (
             <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>Durum</Text>
+              <Text style={styles.settingLabel}>Status</Text>
               <Text style={[styles.settingValue, { color: colors.textTertiary }]}>
-                Henüz atanmadı
+                Not assigned yet
               </Text>
             </View>
           )}
         </View>
 
         {/* Notification settings */}
-        <Text style={styles.sectionTitle}>BİLDİRİMLER</Text>
+        <Text style={styles.sectionTitle}>NOTIFICATIONS</Text>
         <View style={[styles.card, shadows.sm]}>
           <SettingToggle
             label="Enable Notifications"
@@ -201,7 +201,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* Data section */}
-        <Text style={styles.sectionTitle}>VERİ</Text>
+        <Text style={styles.sectionTitle}>DATA</Text>
         <View style={[styles.card, shadows.sm]}>
           <SettingRow
             label="Sync Status"
@@ -228,7 +228,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* About section */}
-        <Text style={styles.sectionTitle}>HAKKINDA</Text>
+        <Text style={styles.sectionTitle}>ABOUT</Text>
         <View style={[styles.card, shadows.sm]}>
           <SettingRow label="Version" value="1.0.0" />
           <View style={styles.separator} />
@@ -240,12 +240,12 @@ export default function SettingsScreen() {
           style={styles.logoutButton}
           onPress={() => {
             Alert.alert(
-              'Çıkış Yap',
-              'Hesabınızdan çıkış yapmak istediğinize emin misiniz?',
+              'Sign Out',
+              'Are you sure you want to sign out?',
               [
-                { text: 'İptal', style: 'cancel' },
+                { text: 'Cancel', style: 'cancel' },
                 {
-                  text: 'Çıkış Yap',
+                  text: 'Sign Out',
                   style: 'destructive',
                   onPress: () => signOut(),
                 },
@@ -254,15 +254,15 @@ export default function SettingsScreen() {
           }}
         >
           <LogOut size={18} color={colors.danger} />
-          <Text style={styles.logoutText}>Çıkış Yap</Text>
+          <Text style={styles.logoutText}>Sign Out</Text>
         </TouchableOpacity>
 
         {/* Disclaimer */}
         <View style={styles.disclaimer}>
           <Text style={styles.disclaimerText}>
-            CardioGuard bir izleme aracıdır ve tıbbi teşhis sağlamaz.
-            Tıbbi kararlar için her zaman sağlık uzmanınıza danışın.
-            Acil durumda yerel acil yardım numaranızı arayın.
+            CardioGuard is a monitoring tool and does not provide medical diagnosis.
+            Always consult your healthcare provider for medical decisions.
+            In case of emergency, call your local emergency number.
           </Text>
         </View>
 

@@ -362,61 +362,61 @@ class PipelineService {
   }
 
   /**
-   * Generate patient-friendly event title (Turkish).
+   * Generate patient-friendly event title.
    */
   private generateEventTitle(result: PipelineResult): string {
     const titles: Record<string, string> = {
-      bradycardia: 'Düşük Kalp Hızı Tespit Edildi',
-      tachycardia: 'Yüksek Kalp Hızı Tespit Edildi',
-      irregular_rhythm: 'Düzensiz Kalp Ritmi Tespit Edildi',
-      afib_suspect: 'Düzensiz Kalp Ritmi Tespit Edildi',
-      signal_loss: 'Sinyal Kaybı',
-      pause: 'Kalp Atışında Duraklama',
+      bradycardia: 'Low Heart Rate Detected',
+      tachycardia: 'High Heart Rate Detected',
+      irregular_rhythm: 'Irregular Heart Rhythm Detected',
+      afib_suspect: 'Irregular Heart Rhythm Detected',
+      signal_loss: 'Signal Loss',
+      pause: 'Heartbeat Pause Detected',
     };
-    return titles[result.pattern] || 'Anormal EKG Bulgusu';
+    return titles[result.pattern] || 'Abnormal ECG Finding';
   }
 
   /**
-   * Generate patient-friendly event description (Turkish).
+   * Generate patient-friendly event description.
    */
   private generateEventDescription(result: PipelineResult): string {
     const bpm = Math.round(result.heart_rate_bpm);
     const severity = result.severity;
 
     if (result.pattern === 'bradycardia') {
-      return `Kalp hızınız ${bpm} BPM olarak ölçüldü. Bu değer normalin altında. Doktorunuz bilgilendirildi.`;
+      return `Your heart rate was measured at ${bpm} BPM. This is below normal. Your doctor has been notified.`;
     }
     if (result.pattern === 'tachycardia') {
-      return `Kalp hızınız ${bpm} BPM olarak ölçüldü. Bu değer normalin üstünde. Doktorunuz bilgilendirildi.`;
+      return `Your heart rate was measured at ${bpm} BPM. This is above normal. Your doctor has been notified.`;
     }
     if (result.pattern === 'irregular_rhythm' || result.pattern === 'afib_suspect') {
-      return `Kalp ritminizde düzensizlik tespit edildi. Doktorunuz bilgilendirildi.`;
+      return `An irregularity was detected in your heart rhythm. Your doctor has been notified.`;
     }
     if (result.pattern === 'pause') {
-      return `Kalp atışlarınızda kısa bir duraklama tespit edildi. Doktorunuz bilgilendirildi.`;
+      return `A brief pause was detected in your heartbeat. Your doctor has been notified.`;
     }
 
     if (severity === 'CRITICAL') {
-      return `Kritik seviyede bir EKG anomalisi tespit edildi (${bpm} BPM). Acil durum kişiniz ve doktorunuz bilgilendirildi.`;
+      return `A critical ECG anomaly was detected (${bpm} BPM). Your emergency contact and doctor have been notified.`;
     }
 
-    return result.event_summary ?? `EKG analizinde olağandışı bir bulgu tespit edildi (${bpm} BPM). Doktorunuz bilgilendirildi.`;
+    return result.event_summary ?? `An unusual finding was detected in the ECG analysis (${bpm} BPM). Your doctor has been notified.`;
   }
 
   /**
-   * Generate patient action recommendation (Turkish).
+   * Generate patient action recommendation.
    */
   private generatePatientAction(result: PipelineResult): string {
     if (result.severity === 'CRITICAL') {
-      return 'Lütfen sakin olun ve hareket etmeyin. Acil durum kişiniz ve doktorunuz bilgilendirildi. Kendinizi çok kötü hissediyorsanız 112\'yi arayın.';
+      return 'Please stay calm and do not move. Your emergency contact and doctor have been notified. If you feel very unwell, call 112.';
     }
     if (result.severity === 'HIGH') {
-      return 'Doktorunuz bilgilendirildi. Lütfen monitörünüzü takmaya devam edin ve fiziksel aktiviteyi azaltın.';
+      return 'Your doctor has been notified. Please continue wearing your monitor and reduce physical activity.';
     }
     if (result.severity === 'MEDIUM') {
-      return 'Doktorunuz bilgilendirildi. Monitörünüzü takmaya devam edin.';
+      return 'Your doctor has been notified. Continue wearing your monitor.';
     }
-    return 'Acil bir durum söz konusu değil. Monitörünüzü takmaya devam edin.';
+    return 'There is no emergency. Continue wearing your monitor.';
   }
 
   /**

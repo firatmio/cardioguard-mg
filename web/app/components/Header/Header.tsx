@@ -102,7 +102,7 @@ export const Header = () => {
                 className={styles.mobileLink}
                 onClick={() => setMobileOpen(false)}
               >
-                Doktor Paneli
+                Doctor Panel
               </Link>
             )}
             {!loading && user ? (

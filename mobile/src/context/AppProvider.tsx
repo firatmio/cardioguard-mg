@@ -31,8 +31,8 @@ export function AppProvider({ children }: AppProviderProps) {
   }, []);
 
   // ── FCM Token Registration ──────────────────────────────────────────────
-  // Push token'ı Firestore users/{uid} dokümanına kaydet.
-  // Server tarafı FCM bildirimi gönderirken bu token'ı kullanır.
+  // Save push token to Firestore users/{uid} document.
+  // The server side uses this token when sending FCM notifications.
   useEffect(() => {
     if (!isReady || !user) return;
 

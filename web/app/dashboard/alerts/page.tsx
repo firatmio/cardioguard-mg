@@ -15,10 +15,10 @@ import { acknowledgeAlert } from "@/lib/firebase/firestore";
 import styles from "./page.module.css";
 
 const severityLabels: Record<string, string> = {
-  critical: "Kritik",
-  urgent: "Acil",
-  warning: "Uyarı",
-  info: "Bilgi",
+  critical: "Critical",
+  urgent: "Urgent",
+  warning: "Warning",
+  info: "Info",
 };
 
 export default function AlertsPage() {
@@ -38,11 +38,11 @@ export default function AlertsPage() {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMin = Math.floor(diffMs / 60000);
-    if (diffMin < 1) return "Şimdi";
-    if (diffMin < 60) return `${diffMin} dk önce`;
+    if (diffMin < 1) return "Now";
+    if (diffMin < 60) return `${diffMin}m ago`;
     const diffH = Math.floor(diffMin / 60);
-    if (diffH < 24) return `${diffH} sa önce`;
-    return `${Math.floor(diffH / 24)} gün önce`;
+    if (diffH < 24) return `${diffH}h ago`;
+    return `${Math.floor(diffH / 24)}d ago`;
   };
 
   const handleAcknowledge = async (alertId: string) => {
@@ -61,7 +61,7 @@ export default function AlertsPage() {
       <div className={styles.page}>
         <div className={styles.loadingState}>
           <Loader2 size={24} className={styles.spin} />
-          <p>Uyarılar yükleniyor...</p>
+          <p>Loading alerts...</p>
         </div>
       </div>
     );
@@ -71,14 +71,14 @@ export default function AlertsPage() {
     <div className={styles.page}>
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.pageTitle}>Anomali Uyarıları</h1>
+          <h1 className={styles.pageTitle}>Anomaly Alerts</h1>
           <p className={styles.pageDesc}>
-            AI tarafından tespit edilen kardiyak anomaliler.
+            Cardiac anomalies detected by AI.
           </p>
         </div>
         <div className={styles.unreadBadge}>
           <AlertTriangle size={14} />
-          {unreadCount} okunmamış
+          {unreadCount} unread
         </div>
       </div>
 
@@ -92,9 +92,9 @@ export default function AlertsPage() {
               onClick={() => setFilter(f)}
             >
               {f === "all"
-                ? "Tümü"
+                ? "All"
                 : f === "unread"
-                  ? "Okunmamış"
+                  ? "Unread"
                   : severityLabels[f]}
             </button>
           )
@@ -140,7 +140,7 @@ export default function AlertsPage() {
               )}
               {alert.acknowledged ? (
                 <span className={`${styles.ackBadge} ${styles.acked}`}>
-                  <CheckCircle2 size={12} /> Onaylandı
+                  <CheckCircle2 size={12} /> Acknowledged
                 </span>
               ) : (
                 <button
@@ -149,9 +149,9 @@ export default function AlertsPage() {
                   disabled={acking === alert.id}
                 >
                   {acking === alert.id ? (
-                    <><Loader2 size={12} className={styles.spin} /> Onaylanıyor...</>
+                    <><Loader2 size={12} className={styles.spin} /> Acknowledging...</>
                   ) : (
-                    <><XCircle size={12} /> Onayla</>
+                    <><XCircle size={12} /> Acknowledge</>
                   )}
                 </button>
               )}
@@ -165,8 +165,8 @@ export default function AlertsPage() {
           <Filter size={24} />
           <p>
             {alerts.length === 0
-              ? "Henüz uyarı yok."
-              : "Bu filtreye uygun uyarı bulunamadı."}
+              ? "No alerts yet."
+              : "No alerts matching this filter."}
           </p>
         </div>
       )}

@@ -25,7 +25,7 @@ export function useGoogleAuth() {
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: WEB_CLIENT_ID,
     androidClientId: ANDROID_CLIENT_ID,
-    iosClientId: WEB_CLIENT_ID, // iOS: ayrı client ID yoksa webClientId kullan
+    iosClientId: WEB_CLIENT_ID, // iOS: use webClientId if no separate client ID
   });
 
   useEffect(() => {
@@ -41,14 +41,14 @@ export function useGoogleAuth() {
     try {
       const { id_token } = response.params;
       if (!id_token) {
-        setError('Google kimlik doğrulama başarısız oldu.');
+        setError('Google authentication failed.');
         return;
       }
       await signInWithGoogleToken(id_token);
       // Auth state change will trigger navigation automatically
     } catch (err: any) {
       console.error('[GoogleAuth] Error:', err);
-      setError('Google ile giriş yapılamadı. Lütfen tekrar deneyin.');
+      setError('Could not sign in with Google. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ export function useGoogleAuth() {
     try {
       await promptAsync();
     } catch (err) {
-      setError('Google giriş penceresi açılamadı.');
+      setError('Could not open Google sign-in window.');
     }
   };
 

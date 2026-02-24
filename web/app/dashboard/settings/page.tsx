@@ -19,9 +19,9 @@ export default function SettingsPage() {
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Ayarlar</h1>
+        <h1 className={styles.pageTitle}>Settings</h1>
         <p className={styles.pageDesc}>
-          Hesap bilgilerinizi ve tercihlerinizi yönetin.
+          Manage your account information and preferences.
         </p>
       </div>
 
@@ -29,7 +29,7 @@ export default function SettingsPage() {
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
           <User size={16} />
-          Profil Bilgileri
+          Profile Information
         </h2>
         <div className={styles.card}>
           <div className={styles.profileRow}>
@@ -49,7 +49,7 @@ export default function SettingsPage() {
             </div>
             <div className={styles.profileInfo}>
               <div className={styles.profileName}>
-                {user?.displayName || "Doktor"}
+                {user?.displayName || "Doctor"}
               </div>
               <div className={styles.profileEmail}>{user?.email}</div>
             </div>
@@ -70,13 +70,13 @@ export default function SettingsPage() {
 
           <div className={styles.fieldGrid}>
             <div className={styles.field}>
-              <label className={styles.fieldLabel}>Ad Soyad</label>
+              <label className={styles.fieldLabel}>Full Name</label>
               <div className={styles.fieldValue}>
                 {user?.displayName || "—"}
               </div>
             </div>
             <div className={styles.field}>
-              <label className={styles.fieldLabel}>E-posta</label>
+              <label className={styles.fieldLabel}>Email</label>
               <div className={styles.fieldValue}>{user?.email || "—"}</div>
             </div>
             <div className={styles.field}>
@@ -84,11 +84,11 @@ export default function SettingsPage() {
               <div className={styles.fieldValueMono}>{user?.uid}</div>
             </div>
             <div className={styles.field}>
-              <label className={styles.fieldLabel}>Son Giriş</label>
+              <label className={styles.fieldLabel}>Last Sign In</label>
               <div className={styles.fieldValue}>
                 {user?.metadata.lastSignInTime
                   ? new Date(user.metadata.lastSignInTime).toLocaleString(
-                      "tr-TR"
+                      "en-US"
                     )
                   : "—"}
               </div>
@@ -101,14 +101,14 @@ export default function SettingsPage() {
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
           <Bell size={16} />
-          Bildirim Tercihleri
+          Notification Preferences
         </h2>
         <div className={styles.card}>
           <div className={styles.settingRow}>
             <div className={styles.settingInfo}>
-              <div className={styles.settingLabel}>Kritik Uyarılar</div>
+              <div className={styles.settingLabel}>Critical Alerts</div>
               <div className={styles.settingDesc}>
-                Anlık push bildirim — kritik ve acil anomaliler
+                Instant push notification — critical and urgent anomalies
               </div>
             </div>
             <div className={`${styles.toggle} ${styles.toggleOn}`}>
@@ -117,9 +117,9 @@ export default function SettingsPage() {
           </div>
           <div className={styles.settingRow}>
             <div className={styles.settingInfo}>
-              <div className={styles.settingLabel}>Günlük Özet</div>
+              <div className={styles.settingLabel}>Daily Summary</div>
               <div className={styles.settingDesc}>
-                Her gün sabah 08:00'de hasta durumu raporu
+                Patient status report every day at 08:00 AM
               </div>
             </div>
             <div className={`${styles.toggle} ${styles.toggleOn}`}>
@@ -128,9 +128,9 @@ export default function SettingsPage() {
           </div>
           <div className={styles.settingRow}>
             <div className={styles.settingInfo}>
-              <div className={styles.settingLabel}>Bağlantı Kopma</div>
+              <div className={styles.settingLabel}>Connection Loss</div>
               <div className={styles.settingDesc}>
-                Hasta cihazı 30 dk+ çevrimdışı olduğunda
+                When patient device is offline for 30+ minutes
               </div>
             </div>
             <div className={styles.toggle}>
@@ -139,9 +139,9 @@ export default function SettingsPage() {
           </div>
           <div className={styles.settingRow}>
             <div className={styles.settingInfo}>
-              <div className={styles.settingLabel}>E-posta Bildirimleri</div>
+              <div className={styles.settingLabel}>Email Notifications</div>
               <div className={styles.settingDesc}>
-                Uyarıları e-posta olarak da al
+                Also receive alerts via email
               </div>
             </div>
             <div className={styles.toggle}>
@@ -155,7 +155,7 @@ export default function SettingsPage() {
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
           <Shield size={16} />
-          Sistem Bilgisi
+          System Information
         </h2>
         <div className={styles.card}>
           <div className={styles.infoGrid}>
@@ -171,13 +171,13 @@ export default function SettingsPage() {
             </div>
             <div className={styles.infoItem}>
               <Shield size={14} />
-              <span className={styles.infoLabel}>Uyumluluk</span>
+              <span className={styles.infoLabel}>Compliance</span>
               <span className={styles.infoValue}>HIPAA · GDPR · KVKK</span>
             </div>
             <div className={styles.infoItem}>
               <Globe size={14} />
-              <span className={styles.infoLabel}>Bölge</span>
-              <span className={styles.infoValue}>europe-west1 (Belçika)</span>
+              <span className={styles.infoLabel}>Region</span>
+              <span className={styles.infoValue}>europe-west1 (Belgium)</span>
             </div>
           </div>
         </div>

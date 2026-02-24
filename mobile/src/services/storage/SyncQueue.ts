@@ -49,19 +49,19 @@ class SyncQueue {
   private constructor() {}
 
   /**
-   * FirestoreECGSync henüz initialize edilmemişse, mevcut Firebase Auth
-   * kullanıcısından otomatik başlat. Patient doc yoksa oluşturur.
+   * If FirestoreECGSync has not been initialized yet, automatically start
+   * it from the current Firebase Auth user. Creates patient doc if it doesn't exist.
    */
   private async ensureFirestoreReady(): Promise<string | null> {
     const ecgSync = FirestoreECGSync.getInstance();
     let docId = ecgSync.getPatientDocId();
     if (docId) return docId;
 
-    // Mevcut kullanıcıyı Firebase Auth'tan al
+    // Get the current user from Firebase Auth
     const currentUser = auth.currentUser;
     if (!currentUser) return null;
 
-    // initialize() patient doc'u arar veya oluşturur
+    // initialize() searches for or creates the patient doc
     await ecgSync.initialize(currentUser.uid);
     return ecgSync.getPatientDocId();
   }
@@ -244,7 +244,7 @@ class SyncQueue {
       const pipelineResult = await pipeline.analyzeBatch(segments);
 
       if (pipelineResult.analyzed > 0) {
-        // Pipeline başarılı — analiz edilenler synced
+        // Pipeline succeeded — analyzed items are synced
         const analyzedIds = items.slice(0, pipelineResult.analyzed).map((i) => i.id);
         const analyzedSegIds = items.slice(0, pipelineResult.analyzed).map((i) => i.referenceId);
         await this.db.removeSyncItems(analyzedIds);
@@ -253,7 +253,7 @@ class SyncQueue {
       }
 
       if (pipelineResult.failed > 0) {
-        // ── 2) Pipeline başarısız olanlar → batch ingest fallback ──────────
+        // ── 2) Pipeline failures → batch ingest fallback ──────────
         const failedSegments = segments.slice(pipelineResult.analyzed);
         const failedItems = items.slice(pipelineResult.analyzed);
 
@@ -266,7 +266,7 @@ class SyncQueue {
           uploaded += batchResult.accepted;
           failed += failedItems.length - batchResult.accepted;
         } else {
-          // ── 3) REST API tamamen erişilemez → Firestore fallback ──────────
+          // ── 3) REST API completely unreachable → Firestore fallback ──────────
           const patientDocId = await this.ensureFirestoreReady();
           if (patientDocId) {
             try {
@@ -325,7 +325,7 @@ class SyncQueue {
     try {
       const payload = JSON.parse(item.payload);
 
-      // Önce REST API'ye göndermeyi dene
+      // Try sending to REST API first
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), API_CONFIG.timeout);
@@ -344,7 +344,7 @@ class SyncQueue {
           return true;
         }
       } catch {
-        // REST API erişilemez — Firestore'a yaz
+        // REST API unreachable — write to Firestore
       }
 
       // Firestore fallback

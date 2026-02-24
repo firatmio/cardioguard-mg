@@ -45,20 +45,20 @@ export default function LoginPage() {
       }
       switch (code) {
         case "auth/user-not-found":
-          setError("Bu e-posta adresiyle kayıtlı bir hesap bulunamadı.");
+          setError("No account found with this email address.");
           break;
         case "auth/wrong-password":
         case "auth/invalid-credential":
-          setError("E-posta veya şifre hatalı.");
+          setError("Incorrect email or password.");
           break;
         case "auth/invalid-email":
-          setError("Geçersiz e-posta adresi.");
+          setError("Invalid email address.");
           break;
         case "auth/too-many-requests":
-          setError("Çok fazla deneme. Lütfen daha sonra tekrar edin.");
+          setError("Too many attempts. Please try again later.");
           break;
         default:
-          setError("Giriş yapılırken bir hata oluştu.");
+          setError("An error occurred while signing in.");
       }
     } finally {
       setLoading(false);
@@ -78,7 +78,7 @@ export default function LoginPage() {
       if (code === "auth/patient-role") {
         setPatientWarning(true);
       } else if (code !== "auth/popup-closed-by-user") {
-        setError("Google ile giriş yapılırken bir hata oluştu.");
+        setError("An error occurred while signing in with Google.");
       }
     } finally {
       setLoading(false);
@@ -111,26 +111,26 @@ export default function LoginPage() {
             <span className={styles.logoText}>CardioGuard</span>
           </div>
           <h1 className={styles.decorTitle}>
-            Kardiyak İzleme <br />
-            <span className={styles.decorGradient}>Kontrol Paneliniz</span>
+            Cardiac Monitoring <br />
+            <span className={styles.decorGradient}>Control Panel</span>
           </h1>
           <p className={styles.decorDesc}>
-            Hastalarınızın ECG verilerini gerçek zamanlı takip edin, AI destekli
-            anomali uyarılarını anında alın.
+            Monitor your patients&apos; ECG data in real time, receive AI-powered
+            anomaly alerts instantly.
           </p>
 
           <div className={styles.decorStats}>
             <div className={styles.decorStat}>
               <span className={styles.decorStatValue}>99.2%</span>
-              <span className={styles.decorStatLabel}>Anomali Tespiti</span>
+              <span className={styles.decorStatLabel}>Anomaly Detection</span>
             </div>
             <div className={styles.decorStat}>
               <span className={styles.decorStatValue}>{"<"}2s</span>
-              <span className={styles.decorStatLabel}>Uyarı Süresi</span>
+              <span className={styles.decorStatLabel}>Alert Time</span>
             </div>
             <div className={styles.decorStat}>
               <span className={styles.decorStatValue}>24/7</span>
-              <span className={styles.decorStatLabel}>Sürekli İzleme</span>
+              <span className={styles.decorStatLabel}>Continuous Monitoring</span>
             </div>
           </div>
         </div>
@@ -152,9 +152,9 @@ export default function LoginPage() {
 
         <div className={styles.formContainer}>
           <div className={styles.formHeader}>
-            <h2 className={styles.formTitle}>Hoş Geldiniz</h2>
+            <h2 className={styles.formTitle}>Welcome</h2>
             <p className={styles.formSubtitle}>
-              Doktor paneline erişmek için giriş yapın
+              Sign in to access the doctor panel
             </p>
           </div>
 
@@ -169,23 +169,23 @@ export default function LoginPage() {
             <div className={styles.patientWarning}>
               <div className={styles.pwHeader}>
                 <Smartphone size={20} />
-                <span>Bu panel yalnızca doktorlar içindir</span>
+                <span>This panel is for doctors only</span>
               </div>
               <p className={styles.pwText}>
-                Hasta olarak giriş yapmaya çalıştınız. Sağlık verilerinizi
-                takip etmek için lütfen <strong>CardioGuard</strong> mobil
-                uygulamasını kullanın.
+                You tried to sign in as a patient. To track your health data,
+                please use the <strong>CardioGuard</strong> mobile
+                application.
               </p>
               <div className={styles.pwActions}>
                 <Link href="/download" className={styles.pwDownloadBtn}>
                   <Smartphone size={14} />
-                  Uygulamayı İndir
+                  Download App
                 </Link>
                 <button
                   className={styles.pwDismiss}
                   onClick={() => setPatientWarning(false)}
                 >
-                  Kapat
+                  Close
                 </button>
               </div>
             </div>
@@ -204,18 +204,18 @@ export default function LoginPage() {
               <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
               <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
             </svg>
-            <span>Google ile devam et</span>
+            <span>Continue with Google</span>
           </button>
 
           <div className={styles.divider}>
-            <span>veya</span>
+            <span>or</span>
           </div>
 
           {/* Email / Şifre formu */}
           <form onSubmit={handleEmailLogin} className={styles.form}>
             <div className={styles.inputGroup}>
               <label htmlFor="email" className={styles.label}>
-                E-posta
+                Email
               </label>
               <div className={styles.inputWrapper}>
                 <Mail size={16} className={styles.inputIcon} />
@@ -234,7 +234,7 @@ export default function LoginPage() {
 
             <div className={styles.inputGroup}>
               <label htmlFor="password" className={styles.label}>
-                Şifre
+                Password
               </label>
               <div className={styles.inputWrapper}>
                 <Lock size={16} className={styles.inputIcon} />
@@ -254,7 +254,7 @@ export default function LoginPage() {
                   className={styles.eyeBtn}
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
-                  aria-label="Şifreyi göster"
+                  aria-label="Show password"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -270,7 +270,7 @@ export default function LoginPage() {
                 <div className={styles.btnSpinner} />
               ) : (
                 <>
-                  <span>Giriş Yap</span>
+                  <span>Sign In</span>
                   <ArrowRight size={16} />
                 </>
               )}
@@ -279,7 +279,7 @@ export default function LoginPage() {
 
           <p className={styles.footerText}>
             <Link href="/" className={styles.backLink}>
-              ← Ana sayfaya dön
+              ← Back to home
             </Link>
           </p>
         </div>

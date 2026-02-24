@@ -55,17 +55,17 @@ interface TabDef {
 }
 
 const TABS: TabDef[] = [
-  { key: "overview", label: "Genel Bakış", icon: BarChart3 },
-  { key: "analyses", label: "Analizler", icon: Activity },
-  { key: "events", label: "Olaylar", icon: AlertTriangle },
-  { key: "reports", label: "Raporlar", icon: FileText },
+  { key: "overview", label: "Overview", icon: BarChart3 },
+  { key: "analyses", label: "Analyses", icon: Activity },
+  { key: "events", label: "Events", icon: AlertTriangle },
+  { key: "reports", label: "Reports", icon: FileText },
 ];
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 function fmtDate(d: string | null | undefined): string {
   if (!d) return "—";
   const dt = new Date(d);
-  return dt.toLocaleDateString("tr-TR", {
+  return dt.toLocaleDateString("en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -213,7 +213,7 @@ export default function PatientDetailPage() {
       <div className={styles.page}>
         <div className={styles.loadingState}>
           <Loader2 size={28} className={styles.spin} />
-          <p>Hasta verileri yükleniyor...</p>
+          <p>Loading patient data...</p>
         </div>
       </div>
     );
@@ -226,10 +226,10 @@ export default function PatientDetailPage() {
 
   const statusLabel =
     patientStatus === "recording"
-      ? "Kayıt Yapılıyor"
+      ? "Recording"
       : patientStatus === "idle" || patientStatus === "active"
-      ? "Çevrimiçi"
-      : "Çevrimdışı";
+      ? "Online"
+      : "Offline";
 
   const statusClass =
     patientStatus === "recording"
@@ -253,7 +253,7 @@ export default function PatientDetailPage() {
           <button
             className={styles.backBtn}
             onClick={() => router.push("/dashboard/patients")}
-            title="Geri"
+            title="Back"
           >
             <ArrowLeft size={16} />
           </button>
@@ -262,7 +262,7 @@ export default function PatientDetailPage() {
             <h1>{displayPatient.name}</h1>
             <div className={styles.headerMeta}>
               <span>
-                {displayPatient.age} yaş · {displayPatient.gender === "M" ? "Erkek" : "Kadın"}
+                {displayPatient.age} y/o · {displayPatient.gender === "M" ? "Male" : "Female"}
               </span>
               <span className={`${styles.statusBadge} ${statusClass}`}>
                 {patientStatus === "recording" || patientStatus === "idle" || patientStatus === "active" ? (
@@ -280,7 +280,7 @@ export default function PatientDetailPage() {
         <button
           className={styles.backBtn}
           onClick={() => fetchData(true)}
-          title="Yenile"
+          title="Refresh"
           disabled={refreshing}
         >
           <RefreshCw size={16} className={refreshing ? styles.spin : ""} />
@@ -298,7 +298,7 @@ export default function PatientDetailPage() {
               {liveBpm != null ? `${liveBpm}` : "—"}
               <span style={{ fontSize: "0.7rem", fontWeight: 400, marginLeft: 4 }}>BPM</span>
             </div>
-            <div className={styles.statLabel}>Anlık Nabız</div>
+            <div className={styles.statLabel}>Current Heart Rate</div>
           </div>
         </div>
 
@@ -310,7 +310,7 @@ export default function PatientDetailPage() {
             <div className={styles.statValue}>
               {stats?.total_analyses ?? 0}
             </div>
-            <div className={styles.statLabel}>Toplam Analiz</div>
+            <div className={styles.statLabel}>Total Analyses</div>
           </div>
         </div>
 
@@ -320,7 +320,7 @@ export default function PatientDetailPage() {
           </div>
           <div>
             <div className={styles.statValue}>{events.length}</div>
-            <div className={styles.statLabel}>Olay Sayısı</div>
+            <div className={styles.statLabel}>Event Count</div>
           </div>
         </div>
 
@@ -330,7 +330,7 @@ export default function PatientDetailPage() {
           </div>
           <div>
             <div className={styles.statValue}>{anomalyRate}%</div>
-            <div className={styles.statLabel}>Anomali Oranı</div>
+            <div className={styles.statLabel}>Anomaly Rate</div>
           </div>
         </div>
 
@@ -345,7 +345,7 @@ export default function PatientDetailPage() {
                 : "—"}
               <span style={{ fontSize: "0.7rem", fontWeight: 400, marginLeft: 4 }}>ms</span>
             </div>
-            <div className={styles.statLabel}>Ort. HRV (SDNN)</div>
+            <div className={styles.statLabel}>Avg. HRV (SDNN)</div>
           </div>
         </div>
       </div>
@@ -416,7 +416,7 @@ function OverviewTab({
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <span className={styles.cardTitle}>
-            <BarChart3 size={16} /> İstatistikler
+            <BarChart3 size={16} /> Statistics
           </span>
         </div>
         {stats ? (
@@ -429,7 +429,7 @@ function OverviewTab({
               </div>
             </div>
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Min / Max Nabız</div>
+              <div className={styles.baselineLabel}>Min / Max Heart Rate</div>
               <div className={styles.baselineValue}>
                 {(stats.min_heart_rate ?? 0).toFixed(0)} / {(stats.max_heart_rate ?? 0).toFixed(0)}
                 <span className={styles.baselineUnit}>bpm</span>
@@ -450,13 +450,13 @@ function OverviewTab({
               </div>
             </div>
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Normal / Anomali</div>
+              <div className={styles.baselineLabel}>Normal / Anomaly</div>
               <div className={styles.baselineValue}>
                 {stats.normal_count ?? 0} / {stats.anomaly_count ?? 0}
               </div>
             </div>
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Ort. Anomali Skoru</div>
+              <div className={styles.baselineLabel}>Avg. Anomaly Score</div>
               <div className={styles.baselineValue}>
                 {(stats.avg_anomaly_score ?? 0).toFixed(3)}
               </div>
@@ -467,7 +467,7 @@ function OverviewTab({
             <div className={styles.emptyIcon}>
               <BarChart3 size={28} />
             </div>
-            Henüz analiz verisi yok
+            No analysis data yet
           </div>
         )}
       </div>
@@ -476,7 +476,7 @@ function OverviewTab({
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <span className={styles.cardTitle}>
-            <Shield size={16} /> Öğrenilmiş Baseline
+            <Shield size={16} /> Learned Baseline
           </span>
           {trend && (
             <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
@@ -489,14 +489,14 @@ function OverviewTab({
         {baseline ? (
           <div className={styles.baselineGrid}>
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Ort. Nabız</div>
+              <div className={styles.baselineLabel}>Avg. Heart Rate</div>
               <div className={styles.baselineValue}>
                 {(baseline.avg_heart_rate ?? 0).toFixed(1)}
                 <span className={styles.baselineUnit}>bpm</span>
               </div>
             </div>
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Standart Sapma</div>
+              <div className={styles.baselineLabel}>Std. Deviation</div>
               <div className={styles.baselineValue}>
                 ±{(baseline.std_heart_rate ?? 0).toFixed(1)}
                 <span className={styles.baselineUnit}>bpm</span>
@@ -524,7 +524,7 @@ function OverviewTab({
               </div>
             </div>
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Örnek Sayısı</div>
+              <div className={styles.baselineLabel}>Sample Count</div>
               <div className={styles.baselineValue}>{baseline.sample_count ?? 0}</div>
             </div>
           </div>
@@ -533,7 +533,7 @@ function OverviewTab({
             <div className={styles.emptyIcon}>
               <Shield size={28} />
             </div>
-            Baseline henüz oluşturulmadı
+            Baseline not yet established
           </div>
         )}
       </div>
@@ -542,13 +542,13 @@ function OverviewTab({
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <span className={styles.cardTitle}>
-            <Heart size={16} /> Hasta Bilgileri
+            <Heart size={16} /> Patient Information
           </span>
         </div>
         <div className={styles.baselineGrid}>
           {patient.email && (
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>E-posta</div>
+              <div className={styles.baselineLabel}>Email</div>
               <div style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>
                 {patient.email}
               </div>
@@ -556,7 +556,7 @@ function OverviewTab({
           )}
           {patient.phone && (
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Telefon</div>
+              <div className={styles.baselineLabel}>Phone</div>
               <div style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>
                 {patient.phone}
               </div>
@@ -564,7 +564,7 @@ function OverviewTab({
           )}
           {patient.deviceId && (
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Cihaz ID</div>
+              <div className={styles.baselineLabel}>Device ID</div>
               <div style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>
                 {patient.deviceId}
               </div>
@@ -572,7 +572,7 @@ function OverviewTab({
           )}
           {patient.deviceBattery != null && (
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Cihaz Batarya</div>
+              <div className={styles.baselineLabel}>Device Battery</div>
               <div className={styles.baselineValue}>
                 {patient.deviceBattery}
                 <span className={styles.baselineUnit}>%</span>
@@ -581,7 +581,7 @@ function OverviewTab({
           )}
           {patient.notes && (
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Notlar</div>
+              <div className={styles.baselineLabel}>Notes</div>
               <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                 {patient.notes}
               </div>
@@ -594,26 +594,26 @@ function OverviewTab({
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <span className={styles.cardTitle}>
-            <TrendingUp size={16} /> Trend Analizi
+            <TrendingUp size={16} /> Trend Analysis
           </span>
         </div>
         {trend ? (
           <div className={styles.baselineGrid}>
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Trend Tipi</div>
+              <div className={styles.baselineLabel}>Trend Type</div>
               <div style={{ fontSize: "0.85rem", color: "var(--text-primary)", textTransform: "capitalize" }}>
                 {trend.type}
               </div>
             </div>
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Eğim</div>
+              <div className={styles.baselineLabel}>Slope</div>
               <div className={styles.baselineValue}>
                 {trend.slope > 0 ? "+" : ""}
                 {trend.slope.toFixed(4)}
               </div>
             </div>
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Değişim</div>
+              <div className={styles.baselineLabel}>Change</div>
               <div className={styles.baselineValue}>
                 {trend.change_percent > 0 ? "+" : ""}
                 {trend.change_percent.toFixed(1)}
@@ -621,7 +621,7 @@ function OverviewTab({
               </div>
             </div>
             <div className={styles.baselineItem}>
-              <div className={styles.baselineLabel}>Başlangıç → Son</div>
+              <div className={styles.baselineLabel}>Start → End</div>
               <div className={styles.baselineValue}>
                 {trend.start_value.toFixed(1)} → {trend.end_value.toFixed(1)}
               </div>
@@ -632,7 +632,7 @@ function OverviewTab({
             <div className={styles.emptyIcon}>
               <TrendingUp size={28} />
             </div>
-            Henüz trend verisi yok
+            No trend data yet
           </div>
         )}
       </div>
@@ -649,7 +649,7 @@ function AnalysesTab({ analyses }: { analyses: AnalysisRecord[] }) {
           <div className={styles.emptyIcon}>
             <Activity size={28} />
           </div>
-          Henüz analiz verisi yok. Cihaz bağlandığında veriler otomatik gelecektir.
+          No analysis data yet. Data will appear automatically when the device is connected.
         </div>
       </div>
     );
@@ -659,21 +659,21 @@ function AnalysesTab({ analyses }: { analyses: AnalysisRecord[] }) {
     <div className={styles.card}>
       <div className={styles.cardHeader}>
         <span className={styles.cardTitle}>
-          <Activity size={16} /> Son 24 Saat Analizleri
+          <Activity size={16} /> Last 24 Hours Analyses
         </span>
         <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-          {analyses.length} kayıt
+          {analyses.length} records
         </span>
       </div>
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Zaman</th>
-              <th>Anomali Skoru</th>
-              <th>Güvenilirlik</th>
-              <th>Patern</th>
-              <th>Sinyal Kalitesi</th>
+              <th>Time</th>
+              <th>Anomaly Score</th>
+              <th>Confidence</th>
+              <th>Pattern</th>
+              <th>Signal Quality</th>
             </tr>
           </thead>
           <tbody>
@@ -717,7 +717,7 @@ function EventsTab({ events }: { events: EventRecord[] }) {
           <div className={styles.emptyIcon}>
             <AlertTriangle size={28} />
           </div>
-          Henüz olay kaydı yok. Anomali tespit edildiğinde otomatik oluşturulur.
+          No events recorded yet. Events are created automatically when anomalies are detected.
         </div>
       </div>
     );
@@ -727,20 +727,20 @@ function EventsTab({ events }: { events: EventRecord[] }) {
     <div className={styles.card}>
       <div className={styles.cardHeader}>
         <span className={styles.cardTitle}>
-          <AlertTriangle size={16} /> Olaylar
+          <AlertTriangle size={16} /> Events
         </span>
         <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-          {events.length} olay
+          {events.length} events
         </span>
       </div>
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Tarih</th>
-              <th>Tip</th>
-              <th>Ciddiyet</th>
-              <th>Özet</th>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Severity</th>
+              <th>Summary</th>
             </tr>
           </thead>
           <tbody>
@@ -793,8 +793,8 @@ function ReportsTab({
           <div className={styles.emptyIcon}>
             <Brain size={28} />
           </div>
-          Henüz MedGemma raporu oluşturulmadı. Kritik olaylar tespit edildiğinde otomatik
-          oluşturulur.
+          No MedGemma reports generated yet. Reports are created automatically when critical
+          events are detected.
         </div>
       </div>
     );
@@ -832,12 +832,12 @@ function ReportsTab({
                 {reportLoading ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <Loader2 size={14} className={styles.spin} />
-                    Rapor yükleniyor...
+                    Loading report...
                   </div>
                 ) : reportDetail?.doctor_version ? (
                   reportDetail.doctor_version
                 ) : (
-                  "Rapor detayı bulunamadı."
+                  "Report details not found."
                 )}
               </div>
             )}

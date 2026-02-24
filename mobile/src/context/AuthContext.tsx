@@ -69,8 +69,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setPatientData(JSON.parse(storedData));
         }
 
-        // Her uygulama açılışında Firestore profili garanti altına al
-        // (ilk kayıtta başarısız olduysa burada telafi edilir)
+        // Ensure Firestore profile on every app launch
+        // (compensates here if initial registration failed)
         if (syncedUid.current !== firebaseUser.uid) {
           syncedUid.current = firebaseUser.uid;
           saveUserProfile(firebaseUser);
@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem(key, 'true');
     await AsyncStorage.setItem(dataKey, JSON.stringify(data));
 
-    // Server API yerine doğrudan Firestore'a yaz — güvenilir
+    // Write directly to Firestore instead of Server API — reliable
     try {
       const userRef = doc(db, 'users', user.uid);
       await setDoc(userRef, {
@@ -110,11 +110,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         conditions: data.conditions,
         allergies: data.allergies,
         medications: data.medications,
-        // Flat format (geriye uyumluluk)
+        // Flat format (backward compatibility)
         emergencyContactName: data.emergencyContactName,
         emergencyContactPhone: data.emergencyContactPhone,
         emergencyContactRelation: data.emergencyContactRelation,
-        // Nested format (server uyumluluğu)
+        // Nested format (server compatibility)
         emergency_contact: {
           name: data.emergencyContactName,
           phone: data.emergencyContactPhone,

@@ -32,16 +32,16 @@ try {
   auth = getAuth(app);
 }
 
-// Firestore: React Native'de varsayılan WebChannel transport çalışmaz.
-// experimentalAutoDetectLongPolling HTTP long-polling'e geçiş yaparak
-// bağlantı timeout sorunlarını çözer.
+// Firestore: Default WebChannel transport does not work in React Native.
+// experimentalAutoDetectLongPolling switches to HTTP long-polling,
+// resolving connection timeout issues.
 let db: Firestore;
 try {
   db = initializeFirestore(app, {
     experimentalAutoDetectLongPolling: true,
   });
 } catch {
-  // Hot-reload'da initializeFirestore tekrar çağrılamaz
+  // initializeFirestore cannot be called again during hot-reload
   db = getFirestore(app);
 }
 

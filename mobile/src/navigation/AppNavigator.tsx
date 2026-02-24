@@ -118,7 +118,7 @@ function MainTabNavigator() {
         name="Dashboard"
         component={DashboardScreen}
         options={{
-          tabBarLabel: 'Ana Sayfa',
+          tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => <Home size={22} color={color} />,
         }}
       />
@@ -134,7 +134,7 @@ function MainTabNavigator() {
         name="History"
         component={HistoryScreen}
         options={{
-          tabBarLabel: 'Geçmiş',
+          tabBarLabel: 'History',
           tabBarIcon: ({ color }) => <ClipboardList size={22} color={color} />,
           tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
           tabBarBadgeStyle: {
@@ -150,7 +150,7 @@ function MainTabNavigator() {
         name="Device"
         component={DeviceScreen}
         options={{
-          tabBarLabel: 'Cihaz',
+          tabBarLabel: 'Device',
           tabBarIcon: ({ color }) => <Smartphone size={22} color={color} />,
         }}
       />
@@ -158,7 +158,7 @@ function MainTabNavigator() {
         name="Settings"
         component={SettingsScreen}
         options={{
-          tabBarLabel: 'Ayarlar',
+          tabBarLabel: 'Settings',
           tabBarIcon: ({ color }) => <Settings size={22} color={color} />,
         }}
       />
@@ -173,7 +173,7 @@ export default function AppNavigator() {
   const navigationRef = useRef<NavigationContainerRef<any>>(null);
 
   // ── Push notification tap handler ──────────────────────────────────────
-  // Kullanıcı bildirime tıkladığında ilgili ekrana yönlendir.
+  // Navigate to the relevant screen when the user taps a notification.
   useEffect(() => {
     if (!user || !onboardingComplete) return;
 
@@ -196,7 +196,7 @@ export default function AppNavigator() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>CardioGuard yükleniyor...</Text>
+        <Text style={styles.loadingText}>Loading CardioGuard...</Text>
       </View>
     );
   }

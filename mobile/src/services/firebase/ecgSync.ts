@@ -83,9 +83,9 @@ class FirestoreECGSync {
         this.initFailed = false;
         console.log('[FirestoreECGSync] Initialized for patient doc:', this.patientDocId);
       } else {
-        // Patient doc yok — otomatik oluştur.
-        // Doktor henüz eklememişse bile hasta kendi dokümanını oluşturur,
-        // böylece cihaz verileri Firestore'a yazılabilir.
+        // Patient doc does not exist — create automatically.
+        // Even if the doctor hasn't added the patient yet, the patient creates their own document,
+        // so that device data can be written to Firestore.
         try {
           const newDocRef = doc(collection(db, 'patients'));
           await setDoc(newDocRef, {

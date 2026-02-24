@@ -41,7 +41,7 @@ export default function WelcomeScreen({ navigation }: any) {
         </View>
 
         <Text style={styles.appName}>CardioGuard</Text>
-        <Text style={styles.tagline}>Yapay zeka destekli{'\n'}kalp sağlığı takibi</Text>
+        <Text style={styles.tagline}>AI-powered{'\n'}heart health monitoring</Text>
       </View>
 
       {/* Bottom CTA area */}
@@ -51,7 +51,7 @@ export default function WelcomeScreen({ navigation }: any) {
           activeOpacity={0.85}
           onPress={() => navigation.navigate('Register')}
         >
-          <Text style={styles.primaryButtonText}>Hesap Oluştur</Text>
+          <Text style={styles.primaryButtonText}>Create Account</Text>
           <ArrowRight size={18} color={colors.primary} />
         </TouchableOpacity>
 
@@ -60,11 +60,11 @@ export default function WelcomeScreen({ navigation }: any) {
           activeOpacity={0.7}
           onPress={() => navigation.navigate('Login')}
         >
-          <Text style={styles.secondaryButtonText}>Zaten hesabım var</Text>
+          <Text style={styles.secondaryButtonText}>I already have an account</Text>
         </TouchableOpacity>
 
         <Text style={styles.disclaimer}>
-          Devam ederek Kullanım Koşullarını ve{'\n'}Gizlilik Politikasını kabul etmiş olursunuz.
+          By continuing, you agree to the{'\n'}Terms of Use and Privacy Policy.
         </Text>
       </View>
     </View>

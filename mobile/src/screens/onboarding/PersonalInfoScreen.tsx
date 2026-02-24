@@ -22,9 +22,9 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { colors, spacing, fontSize, fontWeight, borderRadius, shadows } from '../../constants/theme';
 
 const genderOptions = [
-  { label: 'Erkek', value: 'male' as const },
-  { label: 'Kadın', value: 'female' as const },
-  { label: 'Diğer', value: 'other' as const },
+  { label: 'Male', value: 'male' as const },
+  { label: 'Female', value: 'female' as const },
+  { label: 'Other', value: 'other' as const },
 ];
 
 export default function PersonalInfoScreen({ navigation, route }: any) {
@@ -60,11 +60,11 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
 
   const handleNext = () => {
     if (!firstName.trim() || !lastName.trim()) {
-      setError('Ad ve soyad zorunludur.');
+      setError('First and last name are required.');
       return;
     }
     if (!dateOfBirth) {
-      setError('Doğum tarihi zorunludur.');
+      setError('Date of birth is required.');
       return;
     }
 
@@ -103,16 +103,16 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
             <View style={styles.progressLine} />
             <View style={styles.progressDot} />
           </View>
-          <Text style={styles.stepLabel}>Adım 1 / 4</Text>
+          <Text style={styles.stepLabel}>Step 1 / 4</Text>
 
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.iconContainer}>
               <User size={22} color="#fff" />
             </View>
-            <Text style={styles.title}>Kişisel Bilgiler</Text>
+            <Text style={styles.title}>Personal Information</Text>
             <Text style={styles.subtitle}>
-              Doktorunuzun sizi tanıyabilmesi için temel bilgilerinizi girin.
+              Enter your basic information so your doctor can identify you.
             </Text>
           </View>
 
@@ -126,11 +126,11 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
           <View style={styles.form}>
             <View style={styles.row}>
               <View style={[styles.inputGroup, { flex: 1 }]}>
-                <Text style={styles.label}>Ad *</Text>
+                <Text style={styles.label}>First Name *</Text>
                 <View style={styles.inputWrapper}>
                   <TextInput
                     style={styles.input}
-                    placeholder="Adınız"
+                    placeholder="Your First Name"
                     placeholderTextColor={colors.textTertiary}
                     value={firstName}
                     onChangeText={setFirstName}
@@ -139,11 +139,11 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
                 </View>
               </View>
               <View style={[styles.inputGroup, { flex: 1 }]}>
-                <Text style={styles.label}>Soyad *</Text>
+                <Text style={styles.label}>Last Name *</Text>
                 <View style={styles.inputWrapper}>
                   <TextInput
                     style={styles.input}
-                    placeholder="Soyadınız"
+                    placeholder="Your Last Name"
                     placeholderTextColor={colors.textTertiary}
                     value={lastName}
                     onChangeText={setLastName}
@@ -154,7 +154,7 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Doğum Tarihi *</Text>
+              <Text style={styles.label}>Date of Birth *</Text>
               <TouchableOpacity
                 style={styles.inputWrapper}
                 activeOpacity={0.7}
@@ -168,7 +168,7 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
                     !dateOfBirth && { color: colors.textTertiary },
                   ]}
                 >
-                  {dateOfBirth ? formatDate(dateOfBirth) : 'Tarih seçin'}
+                  {dateOfBirth ? formatDate(dateOfBirth) : 'Select date'}
                 </Text>
               </TouchableOpacity>
 
@@ -194,9 +194,9 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
                   <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                       <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Doğum Tarihi</Text>
+                        <Text style={styles.modalTitle}>Date of Birth</Text>
                         <TouchableOpacity onPress={() => setShowDatePicker(false)}>
-                          <Text style={styles.modalDone}>Tamam</Text>
+                          <Text style={styles.modalDone}>Done</Text>
                         </TouchableOpacity>
                       </View>
                       <DateTimePicker
@@ -206,7 +206,7 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
                         maximumDate={new Date()}
                         minimumDate={new Date(1920, 0, 1)}
                         onChange={onDateChange}
-                        locale="tr-TR"
+                        locale="en-US"
                         themeVariant="light"
                         textColor="#000000"
                         style={{ height: 216, backgroundColor: '#fff' }}
@@ -218,7 +218,7 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Cinsiyet</Text>
+              <Text style={styles.label}>Gender</Text>
               <View style={styles.genderRow}>
                 {genderOptions.map((opt) => (
                   <TouchableOpacity
@@ -244,7 +244,7 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
 
             <View style={styles.row}>
               <View style={[styles.inputGroup, { flex: 1 }]}>
-                <Text style={styles.label}>Boy (cm)</Text>
+                <Text style={styles.label}>Height (cm)</Text>
                 <View style={styles.inputWrapper}>
                   <TextInput
                     style={styles.input}
@@ -257,7 +257,7 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
                 </View>
               </View>
               <View style={[styles.inputGroup, { flex: 1 }]}>
-                <Text style={styles.label}>Kilo (kg)</Text>
+                <Text style={styles.label}>Weight (kg)</Text>
                 <View style={styles.inputWrapper}>
                   <TextInput
                     style={styles.input}
@@ -280,7 +280,7 @@ export default function PersonalInfoScreen({ navigation, route }: any) {
             activeOpacity={0.85}
             onPress={handleNext}
           >
-            <Text style={styles.nextButtonText}>Devam Et</Text>
+            <Text style={styles.nextButtonText}>Continue</Text>
             <ArrowRight size={18} color="#fff" />
           </TouchableOpacity>
         </View>

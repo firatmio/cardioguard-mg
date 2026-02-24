@@ -84,23 +84,23 @@ export default function MedicationsScreen({ navigation, route }: any) {
             <View style={styles.progressLine} />
             <View style={styles.progressDot} />
           </View>
-          <Text style={styles.stepLabel}>Adım 3 / 4</Text>
+          <Text style={styles.stepLabel}>Step 3 / 4</Text>
 
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.iconContainer}>
               <Pill size={22} color="#fff" />
             </View>
-            <Text style={styles.title}>İlaçlar</Text>
+            <Text style={styles.title}>Medications</Text>
             <Text style={styles.subtitle}>
-              Düzenli kullandığınız ilaçları belirtin.
-              Bu bilgi tıbbi değerlendirme için önemlidir.
+              List the medications you take regularly.
+              This information is important for medical evaluation.
             </Text>
           </View>
 
           {/* Quick-select chips */}
-          <Text style={styles.sectionTitle}>Sık Kullanılan İlaçlar</Text>
-          <Text style={styles.sectionHint}>Kullandıklarınızı seçin (opsiyonel)</Text>
+          <Text style={styles.sectionTitle}>Common Medications</Text>
+          <Text style={styles.sectionHint}>Select the ones you use (optional)</Text>
           <View style={styles.chipGrid}>
             {commonMedications.map((m) => (
               <TouchableOpacity
@@ -122,11 +122,11 @@ export default function MedicationsScreen({ navigation, route }: any) {
           </View>
 
           {/* Custom medication input */}
-          <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Ekle</Text>
+          <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Add</Text>
           <View style={styles.addRow}>
             <TextInput
               style={styles.addInput}
-              placeholder="İlaç adı girin..."
+              placeholder="Enter medication name..."
               placeholderTextColor={colors.textTertiary}
               value={customMed}
               onChangeText={setCustomMed}
@@ -159,7 +159,7 @@ export default function MedicationsScreen({ navigation, route }: any) {
           {medications.length > 0 && (
             <View style={styles.summaryBox}>
               <Text style={styles.summaryText}>
-                {medications.length} ilaç seçildi
+                {medications.length} medication(s) selected
               </Text>
             </View>
           )}
@@ -172,14 +172,14 @@ export default function MedicationsScreen({ navigation, route }: any) {
             onPress={() => navigation.goBack()}
           >
             <ArrowLeft size={18} color={colors.textPrimary} />
-            <Text style={styles.backBtnText}>Geri</Text>
+            <Text style={styles.backBtnText}>Back</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.nextButton}
             activeOpacity={0.85}
             onPress={handleNext}
           >
-            <Text style={styles.nextButtonText}>Devam Et</Text>
+            <Text style={styles.nextButtonText}>Continue</Text>
             <ArrowRight size={18} color="#fff" />
           </TouchableOpacity>
         </View>

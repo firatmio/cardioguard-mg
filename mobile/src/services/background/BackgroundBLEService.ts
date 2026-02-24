@@ -56,8 +56,8 @@ class BackgroundBLEService {
   async initialize(): Promise<void> {
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
-        name: 'EKG Kaydı',
-        description: 'Arka planda EKG kaydı devam ederken gösterilir',
+        name: 'ECG Recording',
+        description: 'Shown while ECG recording continues in the background',
         importance: Notifications.AndroidImportance.LOW,
         sound: undefined,
         vibrationPattern: [0],
@@ -309,20 +309,20 @@ class BackgroundBLEService {
       const ble = BLEManager.getInstance();
       const state = ble.getState();
 
-      const deviceName = state.connectedDevice?.name ?? 'EKG Cihazı';
-      const battery = state.batteryLevel != null ? `Pil: ${state.batteryLevel}%` : '';
+      const deviceName = state.connectedDevice?.name ?? 'ECG Device';
+      const battery = state.batteryLevel != null ? `Battery: ${state.batteryLevel}%` : '';
       const status =
         state.connectionState === 'connected'
-          ? '🟢 Bağlı'
+          ? '🟢 Connected'
           : state.connectionState === 'connecting'
-            ? '🟡 Bağlanıyor...'
-            : '🔴 Bağlantı kesildi';
+            ? '🟡 Connecting...'
+            : '🔴 Disconnected';
 
       const bodyParts = [status, deviceName, battery].filter(Boolean);
 
       this.notificationId = await Notifications.scheduleNotificationAsync({
         content: {
-          title: '❤️ CardioGuard EKG Kaydı',
+          title: '❤️ CardioGuard ECG Recording',
           body: bodyParts.join(' • '),
           data: { channelId: CHANNEL_ID, type: 'foreground-service' },
           sticky: true,

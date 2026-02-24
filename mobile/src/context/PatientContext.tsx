@@ -4,9 +4,9 @@
 // Provides patient profile and status information to the component tree.
 // Offline-first: loads from AsyncStorage cache, then syncs from Firestore.
 //
-// Doktor bağlantısı: Firestore `patients` koleksiyonunda `userId == user.uid`
-// olan dokümanı dinler. Doktor bir hastayı eklediğinde veya güncellediğinde
-// profildeki doctorId/doctorName otomatik güncellenir.
+// Doctor connection: Listens to the document in the Firestore `patients`
+// collection where `userId == user.uid`. When a doctor adds or updates a
+// patient, the doctorId/doctorName in the profile are automatically updated.
 // =============================================================================
 
 import React, {
@@ -73,9 +73,9 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // ── 2. Firestore real-time: doktor atama bilgisini dinle ────────────────
-  //    Doktor panelinden hasta eklendiğinde `patients` koleksiyonuna
-  //    userId, doctorId, doctorName yazılır. Bu listener bunu yakalar.
+  // ── 2. Firestore real-time: listen for doctor assignment info ────────────────
+  //    When a patient is added from the doctor panel, userId, doctorId,
+  //    doctorName are written to the `patients` collection. This listener catches that.
   useEffect(() => {
     if (!user) return;
 
@@ -89,10 +89,10 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
         q,
         async (snapshot) => {
           if (snapshot.empty) {
-            // Doktor henüz hasta olarak eklememiş — doctorId temizle
+            // Doctor hasn't added as patient yet — clear doctorId
             setProfile((prev) => {
               if (!prev) return prev;
-              if (!prev.doctorId) return prev; // zaten boş
+              if (!prev.doctorId) return prev; // already empty
               const updated = { ...prev, doctorId: '', doctorName: '', doctorPhotoUrl: undefined };
               AsyncStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(updated)).catch(() => {});
               return updated;
@@ -100,14 +100,14 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
-          // İlk eşleşen dokümanı al (bir hasta tekbir doktora bağlı)
+          // Get the first matching document (a patient is linked to one doctor)
           const patientDoc = snapshot.docs[0];
           const data = patientDoc.data();
 
           const doctorId = (data.doctorId as string) || '';
           let doctorName = (data.doctorName as string) || '';
 
-          // doctorName boşsa ama doctorId varsa, doktorun users dokümanından adı çek
+          // If doctorName is empty but doctorId exists, fetch the name from the doctor's users document
           if (doctorId && !doctorName) {
             try {
               const doctorRef = firestoreDoc(db, 'users', doctorId);
@@ -125,7 +125,7 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
           }
 
           setProfile((prev) => {
-            // Temel profil bilgileri (patientData veya cache'den)
+            // Base profile information (from patientData or cache)
             const base: PatientProfile = prev ?? {
               id: user.uid,
               displayName: user.displayName || '',
@@ -138,7 +138,7 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
               emergencyContact: '',
             };
 
-            // patientData varsa onboarding bilgilerini de doldur
+            // If patientData exists, also populate onboarding information
             const withOnboarding = patientData
               ? {
                   ...base,
@@ -166,7 +166,7 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
               doctorName,
             };
 
-            // Cache güncellemesi
+            // Cache update
             AsyncStorage.setItem(
               PROFILE_STORAGE_KEY,
               JSON.stringify(updated)
@@ -188,7 +188,7 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
     };
   }, [user, patientData]);
 
-  // ── 3. patientData değiştiğinde profil güncelle (doktor bağlantısı olmadan da)
+  // ── 3. Update profile when patientData changes (even without doctor connection)
   useEffect(() => {
     if (!user || !patientData) return;
 
@@ -240,7 +240,7 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
 
   const refreshStatus = useCallback(async () => {
     if (!profile) return;
-    // Önceki refresh bitmeden yenisini başlatma
+    // Don't start a new refresh before the previous one finishes
     if (isRefreshingRef.current) return;
     isRefreshingRef.current = true;
 
@@ -249,17 +249,17 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
       const patientId = profile.firestoreDocId || profile.id;
       let freshStatus: PatientStatus | null = null;
 
-      // Önce REST API'den çekmeyi dene
+      // Try fetching from REST API first
       try {
         const api = ApiClient.getInstance();
         freshStatus = await api.get<PatientStatus>(
           `/api/v1/patients/${patientId}/status`
         );
       } catch {
-        // REST API erişilemez — Firestore'dan çek
+        // REST API unreachable — fetch from Firestore
       }
 
-      // REST başarısız olduysa Firestore'dan oku
+      // If REST failed, read from Firestore
       if (!freshStatus) {
         const docId = FirestoreECGSync.getInstance().getPatientDocId() || patientId;
         try {

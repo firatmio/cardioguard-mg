@@ -24,10 +24,10 @@ import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { colors, spacing, fontSize, fontWeight, borderRadius, shadows } from '../../constants/theme';
 
 const firebaseErrorMessages: Record<string, string> = {
-  'auth/email-already-in-use': 'Bu e-posta zaten kayıtlı. Giriş yapmayı deneyin.',
-  'auth/invalid-email': 'Geçersiz e-posta adresi.',
-  'auth/weak-password': 'Şifre en az 6 karakter olmalıdır.',
-  'auth/operation-not-allowed': 'E-posta ile kayıt şu an devre dışı.',
+  'auth/email-already-in-use': 'This email is already registered. Try signing in.',
+  'auth/invalid-email': 'Invalid email address.',
+  'auth/weak-password': 'Password must be at least 6 characters.',
+  'auth/operation-not-allowed': 'Email registration is currently disabled.',
 };
 
 export default function RegisterScreen({ navigation }: any) {
@@ -43,15 +43,15 @@ export default function RegisterScreen({ navigation }: any) {
 
   const handleRegister = async () => {
     if (!name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
-      setError('Lütfen tüm alanları doldurun.');
+      setError('Please fill in all fields.');
       return;
     }
     if (password !== confirmPassword) {
-      setError('Şifreler eşleşmiyor.');
+      setError('Passwords do not match.');
       return;
     }
     if (password.length < 6) {
-      setError('Şifre en az 6 karakter olmalıdır.');
+      setError('Password must be at least 6 characters.');
       return;
     }
 
@@ -63,7 +63,7 @@ export default function RegisterScreen({ navigation }: any) {
       // Auth state change will trigger navigation to onboarding
     } catch (err: any) {
       const code = err?.code || '';
-      setError(firebaseErrorMessages[code] || 'Kayıt olunamadı. Lütfen tekrar deneyin.');
+      setError(firebaseErrorMessages[code] || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -91,9 +91,9 @@ export default function RegisterScreen({ navigation }: any) {
 
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Hesap Oluştur</Text>
+            <Text style={styles.title}>Create Account</Text>
             <Text style={styles.subtitle}>
-              CardioGuard ile kalp sağlığınızı takip etmeye hemen başlayın.
+              Start monitoring your heart health with CardioGuard today.
             </Text>
           </View>
 
@@ -107,11 +107,11 @@ export default function RegisterScreen({ navigation }: any) {
           {/* Form */}
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Ad Soyad</Text>
+              <Text style={styles.label}>Full Name</Text>
               <View style={styles.inputWrapper}>
                 <TextInput
                   style={styles.input}
-                  placeholder="Adınız Soyadınız"
+                  placeholder="Your Full Name"
                   placeholderTextColor={colors.textTertiary}
                   value={name}
                   onChangeText={setName}
@@ -121,12 +121,12 @@ export default function RegisterScreen({ navigation }: any) {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>E-posta</Text>
+              <Text style={styles.label}>Email</Text>
               <View style={styles.inputWrapper}>
                 <Mail size={18} color={colors.textTertiary} />
                 <TextInput
                   style={styles.input}
-                  placeholder="ornek@email.com"
+                  placeholder="example@email.com"
                   placeholderTextColor={colors.textTertiary}
                   value={email}
                   onChangeText={setEmail}
@@ -138,12 +138,12 @@ export default function RegisterScreen({ navigation }: any) {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Şifre</Text>
+              <Text style={styles.label}>Password</Text>
               <View style={styles.inputWrapper}>
                 <Lock size={18} color={colors.textTertiary} />
                 <TextInput
                   style={styles.input}
-                  placeholder="En az 6 karakter"
+                  placeholder="At least 6 characters"
                   placeholderTextColor={colors.textTertiary}
                   value={password}
                   onChangeText={setPassword}
@@ -163,12 +163,12 @@ export default function RegisterScreen({ navigation }: any) {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Şifre Tekrar</Text>
+              <Text style={styles.label}>Confirm Password</Text>
               <View style={styles.inputWrapper}>
                 <Lock size={18} color={colors.textTertiary} />
                 <TextInput
                   style={styles.input}
-                  placeholder="Şifrenizi tekrar girin"
+                  placeholder="Re-enter your password"
                   placeholderTextColor={colors.textTertiary}
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
@@ -186,7 +186,7 @@ export default function RegisterScreen({ navigation }: any) {
               {loading ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
-                <Text style={styles.primaryButtonText}>Kayıt Ol</Text>
+                <Text style={styles.primaryButtonText}>Sign Up</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -194,7 +194,7 @@ export default function RegisterScreen({ navigation }: any) {
           {/* Divider */}
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>veya</Text>
+            <Text style={styles.dividerText}>or</Text>
             <View style={styles.dividerLine} />
           </View>
 
@@ -215,16 +215,16 @@ export default function RegisterScreen({ navigation }: any) {
             ) : (
               <>
                 <Text style={styles.googleG}>G</Text>
-                <Text style={styles.googleButtonText}>Google ile Kayıt Ol</Text>
+                <Text style={styles.googleButtonText}>Sign up with Google</Text>
               </>
             )}
           </TouchableOpacity>
 
           {/* Login link */}
           <View style={styles.switchRow}>
-            <Text style={styles.switchText}>Zaten hesabınız var mı? </Text>
+            <Text style={styles.switchText}>Already have an account? </Text>
             <TouchableOpacity onPress={() => navigation.replace('Login')}>
-              <Text style={styles.switchLink}>Giriş Yap</Text>
+              <Text style={styles.switchLink}>Sign In</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

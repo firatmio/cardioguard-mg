@@ -23,12 +23,12 @@ import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { colors, spacing, fontSize, fontWeight, borderRadius, shadows } from '../../constants/theme';
 
 const firebaseErrorMessages: Record<string, string> = {
-  'auth/user-not-found': 'Bu e-posta ile kayıtlı hesap bulunamadı.',
-  'auth/wrong-password': 'Şifre hatalı. Lütfen tekrar deneyin.',
-  'auth/invalid-email': 'Geçersiz e-posta adresi.',
-  'auth/user-disabled': 'Bu hesap devre dışı bırakılmış.',
-  'auth/too-many-requests': 'Çok fazla deneme. Lütfen biraz bekleyin.',
-  'auth/invalid-credential': 'E-posta veya şifre hatalı.',
+  'auth/user-not-found': 'No account found with this email.',
+  'auth/wrong-password': 'Incorrect password. Please try again.',
+  'auth/invalid-email': 'Invalid email address.',
+  'auth/user-disabled': 'This account has been disabled.',
+  'auth/too-many-requests': 'Too many attempts. Please wait a moment.',
+  'auth/invalid-credential': 'Incorrect email or password.',
 };
 
 export default function LoginScreen({ navigation }: any) {
@@ -42,7 +42,7 @@ export default function LoginScreen({ navigation }: any) {
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      setError('Lütfen tüm alanları doldurun.');
+      setError('Please fill in all fields.');
       return;
     }
 
@@ -54,7 +54,7 @@ export default function LoginScreen({ navigation }: any) {
       // Auth state change will trigger navigation automatically
     } catch (err: any) {
       const code = err?.code || '';
-      setError(firebaseErrorMessages[code] || 'Giriş yapılamadı. Lütfen tekrar deneyin.');
+      setError(firebaseErrorMessages[code] || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -85,9 +85,9 @@ export default function LoginScreen({ navigation }: any) {
             <View style={styles.logoIcon}>
               <Heart size={22} color="#fff" strokeWidth={2.5} />
             </View>
-            <Text style={styles.title}>Tekrar Hoş Geldiniz</Text>
+            <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>
-              Hesabınıza giriş yaparak kalp sağlığınızı takip etmeye devam edin.
+              Sign in to your account and continue monitoring your heart health.
             </Text>
           </View>
 
@@ -101,12 +101,12 @@ export default function LoginScreen({ navigation }: any) {
           {/* Form */}
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>E-posta</Text>
+              <Text style={styles.label}>Email</Text>
               <View style={styles.inputWrapper}>
                 <Mail size={18} color={colors.textTertiary} />
                 <TextInput
                   style={styles.input}
-                  placeholder="ornek@email.com"
+                  placeholder="example@email.com"
                   placeholderTextColor={colors.textTertiary}
                   value={email}
                   onChangeText={setEmail}
@@ -118,7 +118,7 @@ export default function LoginScreen({ navigation }: any) {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Şifre</Text>
+              <Text style={styles.label}>Password</Text>
               <View style={styles.inputWrapper}>
                 <Lock size={18} color={colors.textTertiary} />
                 <TextInput
@@ -151,7 +151,7 @@ export default function LoginScreen({ navigation }: any) {
               {loading ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
-                <Text style={styles.primaryButtonText}>Giriş Yap</Text>
+                <Text style={styles.primaryButtonText}>Sign In</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -159,7 +159,7 @@ export default function LoginScreen({ navigation }: any) {
           {/* Divider */}
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>veya</Text>
+            <Text style={styles.dividerText}>or</Text>
             <View style={styles.dividerLine} />
           </View>
 
@@ -180,16 +180,16 @@ export default function LoginScreen({ navigation }: any) {
             ) : (
               <>
                 <Text style={styles.googleG}>G</Text>
-                <Text style={styles.googleButtonText}>Google ile Giriş Yap</Text>
+                <Text style={styles.googleButtonText}>Sign in with Google</Text>
               </>
             )}
           </TouchableOpacity>
 
           {/* Register link */}
           <View style={styles.switchRow}>
-            <Text style={styles.switchText}>Hesabınız yok mu? </Text>
+            <Text style={styles.switchText}>Don't have an account? </Text>
             <TouchableOpacity onPress={() => navigation.replace('Register')}>
-              <Text style={styles.switchLink}>Kayıt Ol</Text>
+              <Text style={styles.switchLink}>Sign Up</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

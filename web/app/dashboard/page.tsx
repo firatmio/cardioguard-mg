@@ -154,7 +154,7 @@ export default function DashboardPage() {
       <div className={styles.page}>
         <div className={styles.loadingState}>
           <Loader2 size={28} className={styles.spin} />
-          <p>Veriler yükleniyor...</p>
+          <p>Loading data...</p>
         </div>
       </div>
     );
@@ -162,25 +162,25 @@ export default function DashboardPage() {
 
   const statsCards = [
     {
-      title: "Toplam Hasta",
+      title: "Total Patients",
       value: String(stats.totalPatients),
       icon: Users,
       color: "primary",
     },
     {
-      title: "Aktif Kayıt",
+      title: "Active Recordings",
       value: String(stats.activeRecordings),
       icon: Activity,
       color: "success",
     },
     {
-      title: "Bugünkü Uyarılar",
+      title: "Today's Alerts",
       value: String(stats.todayAlerts),
       icon: AlertTriangle,
       color: "warning",
     },
     {
-      title: "Ort. Kalp Hızı",
+      title: "Avg. Heart Rate",
       value: stats.avgBpm > 0 ? String(stats.avgBpm) : "—",
       suffix: stats.avgBpm > 0 ? "bpm" : undefined,
       icon: Heart,
@@ -194,11 +194,11 @@ export default function DashboardPage() {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMin = Math.floor(diffMs / 60000);
-    if (diffMin < 1) return "Şimdi";
-    if (diffMin < 60) return `${diffMin} dk önce`;
+    if (diffMin < 1) return "Now";
+    if (diffMin < 60) return `${diffMin}m ago`;
     const diffH = Math.floor(diffMin / 60);
-    if (diffH < 24) return `${diffH} sa önce`;
-    return `${Math.floor(diffH / 24)} gün önce`;
+    if (diffH < 24) return `${diffH}h ago`;
+    return `${Math.floor(diffH / 24)}d ago`;
   };
 
   return (
@@ -206,14 +206,14 @@ export default function DashboardPage() {
       {/* Header */}
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.pageTitle}>Genel Bakış</h1>
+          <h1 className={styles.pageTitle}>Overview</h1>
           <p className={styles.pageDesc}>
-            Hastalarınızın kardiyak durumlarını gerçek zamanlı takip edin.
+            Monitor your patients' cardiac conditions in real time.
           </p>
         </div>
         <div className={styles.liveIndicator}>
           <span className={styles.liveDot} />
-          <span>Canlı</span>
+          <span>Live</span>
         </div>
       </div>
 
@@ -231,7 +231,7 @@ export default function DashboardPage() {
                 </div>
                 <div className={`${styles.statChange} ${styles.changeUp}`}>
                   <ArrowUpRight size={14} />
-                  <span>canlı</span>
+                  <span>live</span>
                 </div>
               </div>
               <div className={styles.statValue}>
@@ -253,15 +253,15 @@ export default function DashboardPage() {
           <div className={styles.cardHeader}>
             <h2 className={styles.cardTitle}>
               <AlertTriangle size={16} />
-              Son Uyarılar
+              Recent Alerts
             </h2>
             <span className={styles.cardBadge}>
-              {recentAlerts.filter((a) => !a.acknowledged).length} yeni
+              {recentAlerts.filter((a) => !a.acknowledged).length} new
             </span>
           </div>
           <div className={styles.alertList}>
             {recentAlerts.length === 0 ? (
-              <div className={styles.emptyMini}>Henüz uyarı yok.</div>
+              <div className={styles.emptyMini}>No alerts yet.</div>
             ) : (
               recentAlerts.map((alert) => (
                 <div key={alert.id} className={styles.alertRow}>
@@ -292,16 +292,16 @@ export default function DashboardPage() {
           <div className={styles.cardHeader}>
             <h2 className={styles.cardTitle}>
               <Users size={16} />
-              Aktif Hastalar
+              Active Patients
             </h2>
             <span className={styles.cardBadge}>
               {activePatients.filter((p) => p.status === "recording").length}{" "}
-              kayıt
+              recording
             </span>
           </div>
           <div className={styles.patientList}>
             {activePatients.length === 0 ? (
-              <div className={styles.emptyMini}>Henüz hasta yok.</div>
+              <div className={styles.emptyMini}>No patients yet.</div>
             ) : (
               activePatients.map((patient) => (
                 <div key={patient.id} className={styles.patientRow} onClick={() => router.push(`/dashboard/patients/${patient.id}`)}>
@@ -311,7 +311,7 @@ export default function DashboardPage() {
                   <div className={styles.patientInfo}>
                     <span className={styles.patientName}>{patient.name}</span>
                     <span className={styles.patientAge}>
-                      {patient.age} yaş
+                      {patient.age} y/o
                     </span>
                   </div>
                   <div
@@ -319,14 +319,14 @@ export default function DashboardPage() {
                   >
                     {(patient.deviceStatus === "recording" || patient.status === "recording") && <Wifi size={10} />}
                     {patient.deviceStatus === "recording"
-                      ? "Canlı Kayıt"
+                      ? "Live Recording"
                       : patient.deviceStatus === "connected"
-                        ? "Bağlı"
+                        ? "Connected"
                         : patient.status === "recording"
-                          ? "Kayıt"
+                          ? "Recording"
                           : patient.status === "idle"
-                            ? "Beklemede"
-                            : "Çevrimdışı"}
+                            ? "Idle"
+                            : "Offline"}
                   </div>
                   <div className={styles.patientBpm}>
                     {(patient.lastBPM ?? patient.bpm) ? (
@@ -334,7 +334,7 @@ export default function DashboardPage() {
                         <Heart size={12} color={patient.lastBPM ? "#ef4444" : undefined} />
                         <span>{patient.lastBPM ?? patient.bpm}</span>
                         {patient.lastBPM && (
-                          <span className={styles.liveDot} title="Canlı veri" />
+                          <span className={styles.liveDot} title="Live data" />
                         )}
                       </>
                     ) : (
@@ -362,7 +362,7 @@ export default function DashboardPage() {
           <div className={styles.emergencyHeader}>
             <ShieldAlert size={18} />
             <span>
-              {emergencyAlerts.length} Aktif Acil Durum Uyarısı
+              {emergencyAlerts.length} Active Emergency Alert(s)
             </span>
           </div>
           <div className={styles.emergencyList}>
@@ -384,14 +384,14 @@ export default function DashboardPage() {
                 </span>
                 <span className={styles.emergencyTime}>
                   {ea.created_at
-                    ? new Date(ea.created_at).toLocaleTimeString("tr-TR", {
+                    ? new Date(ea.created_at).toLocaleTimeString("en-US", {
                         hour: "2-digit",
                         minute: "2-digit",
                       })
                     : ""}
                 </span>
                 {ea.notified_emergency_contact && (
-                  <span className={styles.emergencyNotified} title="Acil kişi bilgilendirildi">
+                  <span className={styles.emergencyNotified} title="Emergency contact notified">
                     <CheckCircle2 size={12} /> SMS
                   </span>
                 )}
@@ -406,9 +406,9 @@ export default function DashboardPage() {
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitleRow}>
             <Timer size={18} />
-            <h2 className={styles.sectionTitle}>Son 24 Saat</h2>
+            <h2 className={styles.sectionTitle}>Last 24 Hours</h2>
           </div>
-          <span className={styles.sectionBadge}>Canlı</span>
+          <span className={styles.sectionBadge}>Live</span>
         </div>
 
         {/* 24h Stat Grid */}
@@ -418,7 +418,7 @@ export default function DashboardPage() {
               <Activity size={16} />
             </div>
             <div className={styles.stat24hValue}>{agg.totalAnalyses}</div>
-            <div className={styles.stat24hLabel}>ECG Analizi</div>
+            <div className={styles.stat24hLabel}>ECG Analyses</div>
           </div>
 
           <div className={styles.stat24h}>
@@ -426,7 +426,7 @@ export default function DashboardPage() {
               <AlertTriangle size={16} />
             </div>
             <div className={styles.stat24hValue}>{agg.totalEvents}</div>
-            <div className={styles.stat24hLabel}>Olay</div>
+            <div className={styles.stat24hLabel}>Events</div>
           </div>
 
           <div className={styles.stat24h}>
@@ -437,7 +437,7 @@ export default function DashboardPage() {
               {agg.avgHeartRate > 0 ? agg.avgHeartRate : "—"}
               {agg.avgHeartRate > 0 && <span className={styles.stat24hUnit}>bpm</span>}
             </div>
-            <div className={styles.stat24hLabel}>Ort. Nabız</div>
+            <div className={styles.stat24hLabel}>Avg. Heart Rate</div>
           </div>
 
           <div className={styles.stat24h}>
@@ -460,7 +460,7 @@ export default function DashboardPage() {
               {agg.avgSdnn > 0 ? agg.avgSdnn : "—"}
               {agg.avgSdnn > 0 && <span className={styles.stat24hUnit}>ms</span>}
             </div>
-            <div className={styles.stat24hLabel}>Ort. HRV (SDNN)</div>
+            <div className={styles.stat24hLabel}>Avg. HRV (SDNN)</div>
           </div>
 
           <div className={styles.stat24h}>
@@ -471,7 +471,7 @@ export default function DashboardPage() {
               {agg.avgRmssd > 0 ? agg.avgRmssd : "—"}
               {agg.avgRmssd > 0 && <span className={styles.stat24hUnit}>ms</span>}
             </div>
-            <div className={styles.stat24hLabel}>Ort. HRV (RMSSD)</div>
+            <div className={styles.stat24hLabel}>Avg. HRV (RMSSD)</div>
           </div>
 
           <div className={styles.stat24h}>
@@ -483,7 +483,7 @@ export default function DashboardPage() {
                 ? `${(((agg.totalAnalyses - agg.totalAnomalies) / agg.totalAnalyses) * 100).toFixed(1)}%`
                 : "—"}
             </div>
-            <div className={styles.stat24hLabel}>Normal Oranı</div>
+            <div className={styles.stat24hLabel}>Normal Rate</div>
           </div>
 
           <div className={styles.stat24h}>
@@ -491,7 +491,7 @@ export default function DashboardPage() {
               <Target size={16} />
             </div>
             <div className={styles.stat24hValue}>{agg.avgAnomalyScore}</div>
-            <div className={styles.stat24hLabel}>Ort. Anomali Skoru</div>
+            <div className={styles.stat24hLabel}>Avg. Anomaly Score</div>
           </div>
         </div>
 
@@ -503,7 +503,7 @@ export default function DashboardPage() {
                 <CheckCircle2 size={12} /> Normal: {agg.totalNormal}
               </span>
               <span className={styles.anomalyBarLabel}>
-                <ShieldAlert size={12} /> Anomali: {agg.totalAnomalies}
+                <ShieldAlert size={12} /> Anomaly: {agg.totalAnomalies}
               </span>
             </div>
             <div className={styles.anomalyBarTrack}>
@@ -530,19 +530,19 @@ export default function DashboardPage() {
           <div className={styles.cardHeader}>
             <h2 className={styles.cardTitle}>
               <BarChart3 size={16} />
-              Hasta Bazlı 24 Saat Özeti
+              Patient 24-Hour Summary
             </h2>
             <span className={styles.cardBadge}>
-              {agg.patientBreakdown.length} hasta
+              {agg.patientBreakdown.length} patients
             </span>
           </div>
           <div className={styles.breakdownTable}>
             <div className={styles.breakdownHead}>
-              <span className={styles.breakdownColName}>Hasta</span>
-              <span className={styles.breakdownCol}>Analiz</span>
-              <span className={styles.breakdownCol}>Anomali</span>
-              <span className={styles.breakdownCol}>Olay</span>
-              <span className={styles.breakdownCol}>Ort. BPM</span>
+              <span className={styles.breakdownColName}>Patient</span>
+              <span className={styles.breakdownCol}>Analyses</span>
+              <span className={styles.breakdownCol}>Anomaly</span>
+              <span className={styles.breakdownCol}>Events</span>
+              <span className={styles.breakdownCol}>Avg. BPM</span>
               <span className={styles.breakdownCol}>Risk</span>
             </div>
             {agg.patientBreakdown.map((pb) => (

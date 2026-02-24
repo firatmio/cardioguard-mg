@@ -151,12 +151,12 @@ class ApiClient {
 
       if (error instanceof ApiError) throw error;
 
-      // Timeout (AbortError) → retry etme, hemen hata fırlat
+      // Timeout (AbortError) → do not retry, throw error immediately
       if (error.name === 'AbortError') {
         throw new ApiError('Request timed out', 0);
       }
 
-      // Diğer network hataları → retry with backoff
+      // Other network errors → retry with backoff
       if (retryCount < API_CONFIG.maxRetries) {
         const delay = API_CONFIG.retryBaseDelay * Math.pow(2, retryCount);
         await new Promise((resolve) => setTimeout(resolve, delay));

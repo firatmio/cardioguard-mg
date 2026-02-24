@@ -75,9 +75,9 @@ export default function DeviceScreen() {
       await connect(device.id);
     } catch (error: any) {
       Alert.alert(
-        'Bağlantı Başarısız',
-        error.message || 'Cihaza bağlanılamadı. Lütfen tekrar deneyin.',
-        [{ text: 'Tamam' }],
+        'Connection Failed',
+        error.message || 'Could not connect to the device. Please try again.',
+        [{ text: 'OK' }],
       );
     } finally {
       setConnectingTo(null);
@@ -99,12 +99,12 @@ export default function DeviceScreen() {
 
   const handleDisconnect = () => {
     Alert.alert(
-      'Cihaz Bağlantısını Kes',
-      'Bağlantıyı kesmek istediğinize emin misiniz? Kayıt durduracaktır.',
+      'Disconnect Device',
+      'Are you sure you want to disconnect? This will stop recording.',
       [
-        { text: 'İptal', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Bağlantıyı Kes',
+          text: 'Disconnect',
           style: 'destructive',
           onPress: () => disconnect(),
         },
@@ -122,16 +122,16 @@ export default function DeviceScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.title}>Cihaz</Text>
+        <Text style={styles.title}>Device</Text>
 
         {/* Permission blocked warning */}
         {showPermissionWarning && (
           <View style={styles.permissionWarning}>
             <ShieldAlert size={20} color={colors.warning} />
             <View style={{ flex: 1, marginLeft: 10 }}>
-              <Text style={styles.permWarningTitle}>Bluetooth İzni Gerekli</Text>
+              <Text style={styles.permWarningTitle}>Bluetooth Permission Required</Text>
               <Text style={styles.permWarningText}>
-                BLE cihazları taramak için Bluetooth iznini etkinleştirmeniz gerekiyor. Ayarlar'dan iznleri kontrol edin.
+                You need to enable Bluetooth permission to scan BLE devices. Check permissions in Settings.
               </Text>
             </View>
           </View>
@@ -178,7 +178,7 @@ export default function DeviceScreen() {
               onPress={handleDisconnect}
               activeOpacity={0.7}
             >
-              <Text style={styles.disconnectButtonText}>Bağlantıyı Kes</Text>
+              <Text style={styles.disconnectButtonText}>Disconnect</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -186,9 +186,9 @@ export default function DeviceScreen() {
         {/* Scan section */}
         {!isConnected && (
           <>
-            <Text style={styles.sectionTitle}>Cihazınızı Bulun</Text>
+<Text style={styles.sectionTitle}>Find Your Device</Text>
             <Text style={styles.sectionSubtext}>
-              EKG monitörünüzün açık ve menzil içinde olduğundan emin olun.
+              Make sure your ECG monitor is turned on and within range.
             </Text>
 
             <TouchableOpacity
@@ -199,11 +199,11 @@ export default function DeviceScreen() {
               {isScanning ? (
                 <>
                   <ActivityIndicator size="small" color={colors.textOnPrimary} />
-                  <Text style={styles.scanButtonText}>Taranıyor...</Text>
+                  <Text style={styles.scanButtonText}>Scanning...</Text>
                 </>
               ) : (
                 <Text style={styles.scanButtonText}>
-                  {discoveredDevices.length > 0 ? 'Tekrar Tara' : 'Taramayı Başlat'}
+                  {discoveredDevices.length > 0 ? 'Scan Again' : 'Start Scan'}
                 </Text>
               )}
             </TouchableOpacity>
@@ -225,7 +225,7 @@ export default function DeviceScreen() {
                     isSimulating && styles.simulationButtonTextActive,
                   ]}
                 >
-                  {isSimulating ? 'Simülasyonu Durdur' : 'Simülasyon Modu'}
+                  {isSimulating ? 'Stop Simulation' : 'Simulation Mode'}
                 </Text>
               </TouchableOpacity>
             )}
@@ -234,7 +234,7 @@ export default function DeviceScreen() {
             {discoveredDevices.length > 0 && (
               <View style={styles.deviceList}>
                 <Text style={styles.listLabel}>
-                  Yakındaki Cihazlar ({discoveredDevices.length})
+                  Nearby Devices ({discoveredDevices.length})
                 </Text>
                 {discoveredDevices.map((device) => (
                   <TouchableOpacity
@@ -247,15 +247,15 @@ export default function DeviceScreen() {
                     <View style={styles.deviceItemInfo}>
                       <Text style={styles.deviceItemName}>{device.name}</Text>
                       <Text style={styles.deviceItemSignal}>
-                        Sinyal: {device.rssi} dBm
-                        {device.isPaired ? ' · Daha önce eşleştirildi' : ''}
+                        Signal: {device.rssi} dBm
+                        {device.isPaired ? ' · Previously paired' : ''}
                       </Text>
                     </View>
 
                     {connectingTo === device.id ? (
                       <ActivityIndicator size="small" color={colors.primary} />
                     ) : (
-                      <Text style={styles.connectText}>Bağlan</Text>
+                      <Text style={styles.connectText}>Connect</Text>
                     )}
                   </TouchableOpacity>
                 ))}
@@ -266,10 +266,10 @@ export default function DeviceScreen() {
             {!isScanning && discoveredDevices.length === 0 && (
               <View style={styles.emptyState}>
                 <Radio size={40} color={colors.textTertiary} />
-                <Text style={styles.emptyTitle}>Cihaz bulunamadı</Text>
+                <Text style={styles.emptyTitle}>No device found</Text>
                 <Text style={styles.emptySubtext}>
-                  Holter cihazınızın açık ve yakınlarda olduğundan emin olun.
-                  Telefonunuzda Bluetooth etkin olmalıdır.
+                  Make sure your Holter device is turned on and nearby.
+                  Bluetooth must be enabled on your phone.
                 </Text>
               </View>
             )}
@@ -278,12 +278,12 @@ export default function DeviceScreen() {
 
         {/* Troubleshooting tips */}
         <View style={styles.tipsContainer}>
-          <Text style={styles.tipsTitle}>Sorun Giderme</Text>
-          <TipItem text="Telefonunuzda Bluetooth'un etkin olduğundan emin olun" />
-          <TipItem text="Cihazı telefonunuzun 3 metre yakınında tutun" />
-          <TipItem text="EKG monitöründe yeterli pil olduğundan emin olun" />
-          <TipItem text="Monitörü kapatıp tekrar açmayı deneyin" />
-          <TipItem text="Sorun devam ederse sağlık uzmanınıza başvurun" />
+          <Text style={styles.tipsTitle}>Troubleshooting</Text>
+          <TipItem text="Make sure Bluetooth is enabled on your phone" />
+          <TipItem text="Keep the device within 3 meters of your phone" />
+          <TipItem text="Make sure the ECG monitor has sufficient battery" />
+          <TipItem text="Try turning the monitor off and on again" />
+          <TipItem text="If the problem persists, contact your healthcare provider" />
         </View>
 
         <View style={{ height: 32 }} />

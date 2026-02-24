@@ -21,23 +21,23 @@ import { HeartPulse, ArrowRight, ArrowLeft, Plus, X } from 'lucide-react-native'
 import { colors, spacing, fontSize, fontWeight, borderRadius, shadows } from '../../constants/theme';
 
 const commonConditions = [
-  'Hipertansiyon',
-  'Diyabet',
-  'Kalp Yetmezliği',
-  'Aritmi',
-  'Koroner Arter Hastalığı',
-  'Astım / KOAH',
-  'Tiroid Bozukluğu',
-  'Kolesterol Yüksekliği',
+  'Hypertension',
+  'Diabetes',
+  'Heart Failure',
+  'Arrhythmia',
+  'Coronary Artery Disease',
+  'Asthma / COPD',
+  'Thyroid Disorder',
+  'High Cholesterol',
 ];
 
 const commonAllergies = [
-  'Penisilin',
+  'Penicillin',
   'Aspirin',
-  'İbuprofen',
+  'Ibuprofen',
   'Latex',
-  'Polen',
-  'Gıda Alerjisi',
+  'Pollen',
+  'Food Allergy',
 ];
 
 export default function MedicalHistoryScreen({ navigation, route }: any) {
@@ -105,23 +105,23 @@ export default function MedicalHistoryScreen({ navigation, route }: any) {
             <View style={styles.progressLine} />
             <View style={styles.progressDot} />
           </View>
-          <Text style={styles.stepLabel}>Adım 2 / 4</Text>
+          <Text style={styles.stepLabel}>Step 2 / 4</Text>
 
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.iconContainer}>
               <HeartPulse size={22} color="#fff" />
             </View>
-            <Text style={styles.title}>Tıbbi Geçmiş</Text>
+            <Text style={styles.title}>Medical History</Text>
             <Text style={styles.subtitle}>
-              Mevcut sağlık durumlarınızı ve alerjilerinizi belirtin.
-              Bu bilgiler doktorunuza yardımcı olacaktır.
+              Indicate your current health conditions and allergies.
+              This information will help your doctor.
             </Text>
           </View>
 
           {/* Conditions */}
-          <Text style={styles.sectionTitle}>Mevcut Rahatsızlıklar</Text>
-          <Text style={styles.sectionHint}>Varsa seçin veya ekleyin (opsiyonel)</Text>
+          <Text style={styles.sectionTitle}>Existing Conditions</Text>
+          <Text style={styles.sectionHint}>Select or add if applicable (optional)</Text>
           <View style={styles.chipGrid}>
             {commonConditions.map((c) => (
               <TouchableOpacity
@@ -157,7 +157,7 @@ export default function MedicalHistoryScreen({ navigation, route }: any) {
           <View style={styles.addRow}>
             <TextInput
               style={styles.addInput}
-              placeholder="Başka rahatsızlık ekle..."
+              placeholder="Add another condition..."
               placeholderTextColor={colors.textTertiary}
               value={customCondition}
               onChangeText={setCustomCondition}
@@ -176,8 +176,8 @@ export default function MedicalHistoryScreen({ navigation, route }: any) {
           </View>
 
           {/* Allergies */}
-          <Text style={[styles.sectionTitle, { marginTop: 28 }]}>Alerjiler</Text>
-          <Text style={styles.sectionHint}>Varsa seçin veya ekleyin (opsiyonel)</Text>
+          <Text style={[styles.sectionTitle, { marginTop: 28 }]}>Allergies</Text>
+          <Text style={styles.sectionHint}>Select or add if applicable (optional)</Text>
           <View style={styles.chipGrid}>
             {commonAllergies.map((a) => (
               <TouchableOpacity
@@ -212,7 +212,7 @@ export default function MedicalHistoryScreen({ navigation, route }: any) {
           <View style={styles.addRow}>
             <TextInput
               style={styles.addInput}
-              placeholder="Başka alerji ekle..."
+              placeholder="Add another allergy..."
               placeholderTextColor={colors.textTertiary}
               value={customAllergy}
               onChangeText={setCustomAllergy}
@@ -238,14 +238,14 @@ export default function MedicalHistoryScreen({ navigation, route }: any) {
             onPress={() => navigation.goBack()}
           >
             <ArrowLeft size={18} color={colors.textPrimary} />
-            <Text style={styles.backBtnText}>Geri</Text>
+            <Text style={styles.backBtnText}>Back</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.nextButton}
             activeOpacity={0.85}
             onPress={handleNext}
           >
-            <Text style={styles.nextButtonText}>Devam Et</Text>
+            <Text style={styles.nextButtonText}>Continue</Text>
             <ArrowRight size={18} color="#fff" />
           </TouchableOpacity>
         </View>

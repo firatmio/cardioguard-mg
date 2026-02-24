@@ -21,9 +21,9 @@ import styles from "./layout.module.css";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Hastalar", href: "/dashboard/patients", icon: Users },
-  { label: "Uyarılar", href: "/dashboard/alerts", icon: Bell },
-  { label: "Ayarlar", href: "/dashboard/settings", icon: Settings },
+  { label: "Patients", href: "/dashboard/patients", icon: Users },
+  { label: "Alerts", href: "/dashboard/alerts", icon: Bell },
+  { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 export default function DashboardLayout({
@@ -63,7 +63,7 @@ export default function DashboardLayout({
   const segments = pathname.split("/").filter(Boolean);
   const breadcrumbLabel =
     segments.length <= 1
-      ? "Genel Bakış"
+      ? "Overview"
       : navItems.find((i) => i.href === pathname)?.label ?? segments[segments.length - 1];
 
   return (
@@ -90,13 +90,13 @@ export default function DashboardLayout({
           <button
             className={styles.closeSidebar}
             onClick={() => setSidebarOpen(false)}
-            aria-label="Menüyü kapat"
+            aria-label="Close menu"
           >
             <X size={18} />
           </button>
         </div>
 
-        <div className={styles.sidebarLabel}>MENÜ</div>
+        <div className={styles.sidebarLabel}>MENU</div>
 
         <nav className={styles.nav}>
           {navItems.map((item) => {
@@ -134,14 +134,14 @@ export default function DashboardLayout({
             </div>
             <div className={styles.userInfo}>
               <span className={styles.userName}>
-                {user.displayName || "Doktor"}
+                {user.displayName || "Doctor"}
               </span>
               <span className={styles.userEmail}>{user.email}</span>
             </div>
           </div>
           <button className={styles.logoutBtn} onClick={handleSignOut}>
             <LogOut size={16} />
-            <span>Çıkış Yap</span>
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>
@@ -154,13 +154,13 @@ export default function DashboardLayout({
             <button
               className={styles.menuBtn}
               onClick={() => setSidebarOpen(true)}
-              aria-label="Menüyü aç"
+              aria-label="Open menu"
             >
               <Menu size={20} />
             </button>
             <div className={styles.breadcrumb}>
               <span className={styles.breadcrumbRoot}>Dashboard</span>
-              {breadcrumbLabel !== "Genel Bakış" && (
+              {breadcrumbLabel !== "Overview" && (
                 <>
                   <ChevronRight size={14} />
                   <span className={styles.breadcrumbCurrent}>
@@ -172,7 +172,7 @@ export default function DashboardLayout({
           </div>
 
           <div className={styles.topbarRight}>
-            <button className={styles.topbarIcon} aria-label="Bildirimler">
+            <button className={styles.topbarIcon} aria-label="Notifications">
               <Bell size={18} />
               <span className={styles.notifDot} />
             </button>

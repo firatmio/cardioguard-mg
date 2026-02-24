@@ -230,8 +230,8 @@ class BLEManager {
 
     if (!this.bleManager) {
       throw new Error(
-        'Bluetooth kullanılamıyor. Lütfen Bluetooth\'u açın ve tekrar deneyin. ' +
-        '(Expo Go değil, development build gereklidir)'
+        'Bluetooth is not available. Please turn on Bluetooth and try again. ' +
+        '(Requires development build, not Expo Go)'
       );
     }
 
@@ -632,7 +632,7 @@ class BLEManager {
             if (this.ecgRetryAttempts > BLEManager.MAX_ECG_RETRY_ATTEMPTS) {
               console.error(`[BLEManager] ECG subscription failed after ${BLEManager.MAX_ECG_RETRY_ATTEMPTS} retries — giving up`);
               this.updateState({
-                error: 'ECG veri akışı başlatılamadı. Lütfen cihazı yeniden bağlayın.',
+                error: 'ECG data stream could not be started. Please reconnect the device.',
               });
               return;
             }
@@ -799,7 +799,7 @@ class BLEManager {
           isRecording: false,
           lastDataReceivedAt: null,
           currentBPM: null,
-          error: willReconnect ? 'Bağlantı yeniden kuruluyor...' : null,
+          error: willReconnect ? 'Reconnecting...' : null,
         });
 
         // Auto-reconnect if enabled
@@ -821,7 +821,7 @@ class BLEManager {
       this.isReconnecting = false;
       this.updateState({
         connectionState: 'error',
-        error: 'Bağlantı koptu. Lütfen manuel olarak tekrar bağlanın.',
+        error: 'Connection lost. Please reconnect manually.',
       });
       return;
     }
@@ -851,7 +851,7 @@ class BLEManager {
           this.updateState({
             connectionState: 'error',
             connectedDevice: null,
-            error: 'Bağlantı koptu. Lütfen manuel olarak tekrar bağlanın.',
+            error: 'Connection lost. Please reconnect manually.',
           });
         }
       }

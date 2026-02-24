@@ -116,8 +116,8 @@ export default function DashboardScreen({ navigation }: any) {
             <Text style={styles.greeting}>CardioGuard</Text>
             <Text style={styles.subtitle}>
               {patientData
-                ? `Merhaba, ${patientData.firstName}`
-                : 'Kalp monitörü paneliniz'}
+                ? `Hello, ${patientData.firstName}`
+                : 'Your heart monitor dashboard'}
             </Text>
           </View>
           <DeviceStatusBadge
@@ -142,22 +142,22 @@ export default function DashboardScreen({ navigation }: any) {
               )}
             </View>
             <View style={styles.doctorInfo}>
-              <Text style={styles.doctorLabel}>Doktorunuz</Text>
+              <Text style={styles.doctorLabel}>Your Doctor</Text>
               <Text style={styles.doctorName}>
-                {profile.doctorName || 'Doktorunuz'}
+                {profile.doctorName || 'Your Doctor'}
               </Text>
             </View>
             <View style={styles.doctorBadge}>
-              <Text style={styles.doctorBadgeText}>Bağlı</Text>
+              <Text style={styles.doctorBadgeText}>Connected</Text>
             </View>
           </View>
         ) : (
           <View style={styles.noDoctorCard}>
             <UserCircle size={20} color={colors.textTertiary} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.noDoctorText}>Henüz bir doktora bağlı değilsiniz</Text>
+              <Text style={styles.noDoctorText}>You are not linked to a doctor yet</Text>
               <Text style={styles.noDoctorHint}>
-                Doktorunuz sizi sisteme eklediğinde burada bilgileri görünecek.
+                Your doctor's information will appear here once they add you to the system.
               </Text>
             </View>
           </View>

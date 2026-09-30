@@ -4,6 +4,9 @@
 
 ### AI-Powered Cardiac Monitoring Platform
 
+<center>Thanks to <a href="https://github.com/iclalbulbul" target="_blank">İclal Bülbül</a> and <a href="https://github.com/betulbuyukgedikli" target="_blank">Betül Büyükgedikli</a> for their contributions.</center>
+</br></br>
+
 <p>
   <img src="https://img.shields.io/badge/Platform-iOS%20%7C%20Android-blue?style=for-the-badge" alt="Platform" />
   <img src="https://img.shields.io/badge/AI-MedGemma-red?style=for-the-badge" alt="AI" />
